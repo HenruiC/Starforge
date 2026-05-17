@@ -64,6 +64,16 @@ func _show_char_select() -> void:
 	_is_paused = true
 	$"../HUDLayer".process_mode = Node.PROCESS_MODE_ALWAYS
 
+	# 小岛: 开场叙事 (动态创建)
+	var narrative := Label.new()
+	narrative.name = "Narrative"
+	narrative.text = "\"末日降临的那天，所有人都觉醒了天赋。\n而我，只有D级的【天赋适应】。\n他们说我是废物。\n但今天——在这座沦陷的学校里，\n我要证明他们错了。\""
+	narrative.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	narrative.add_theme_font_size_override("font_size", 15)
+	narrative.add_theme_color_override("font_color", Color(0.7, 0.65, 0.5, 1.0))
+	narrative.position = Vector2(-350, 340); narrative.size = Vector2(700, 120)
+	$"../HUDLayer/CharSelect".add_child(narrative)
+
 	for child in char_select_buttons.get_children():
 		child.queue_free()
 
