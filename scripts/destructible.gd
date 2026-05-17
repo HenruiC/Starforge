@@ -5,11 +5,12 @@ extends StaticBody2D
 @export var drop_xp: int = 25
 @export var object_name: String = "树"
 @export var object_color: Color = Color(0.15, 0.55, 0.15)
+@export var indestructible: bool = false
 
 var _health: int = 20
 
 @onready var sprite: ColorRect = $Sprite
-@onready var hp_bar: ProgressBar = $HealthBar
+@onready var hp_bar: ProgressBar = $HealthBar if has_node("HealthBar") else null
 
 func _ready() -> void:
 	_health = max_health
@@ -17,6 +18,10 @@ func _ready() -> void:
 	add_to_group("destructible")
 
 func take_damage(amount: int) -> void:
+	if indestructible:
+		# 不可破坏物只播放弹回火花，不掉血
+		CombatFeedback.hit_particles(global_position, 3, Color(0.7, 0.7, 0.7))
+		return
 	_health = max(_health - amount, 0)
 	_update_hp()
 
@@ -49,6 +54,7 @@ func _destroy() -> void:
 	t.chain().tween_callback(queue_free)
 
 func _update_hp() -> void:
+	if hp_bar == null: return
 	var ratio: float = float(_health) / float(max_health) * 100.0
 	hp_bar.value = ratio
 	hp_bar.visible = ratio < 100.0
