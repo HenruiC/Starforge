@@ -141,6 +141,61 @@ text = "按 W 重新开始"
 horizontal_alignment = 1
 theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1.0)
 
+[node name="CharSelect" type="Control" parent="HUDLayer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+visible = true
+
+[node name="Bg" type="ColorRect" parent="HUDLayer/CharSelect"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.02, 0.02, 0.06, 0.92)
+
+[node name="Title" type="Label" parent="HUDLayer/CharSelect"]
+layout_mode = 1
+anchors_preset = 0
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_top = 60.0
+offset_right = 300.0
+offset_bottom = 110.0
+text = "选择你的战斗风格"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(0.9, 0.7, 0.2, 1.0)
+
+[node name="Subtitle" type="Label" parent="HUDLayer/CharSelect"]
+layout_mode = 1
+anchors_preset = 0
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_top = 115.0
+offset_right = 300.0
+offset_bottom = 145.0
+text = "—— 天赋猎人 · 战斗原型 ——"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.5, 0.5, 0.5, 1.0)
+
+[node name="Buttons" type="HBoxContainer" parent="HUDLayer/CharSelect"]
+layout_mode = 1
+anchors_preset = 0
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -290.0
+offset_top = 220.0
+offset_right = 290.0
+offset_bottom = 340.0
+theme_override_constants/separation = 20
+alignment = 1
+
 [node name="LevelUpPanel" type="Control" parent="HUDLayer"]
 layout_mode = 1
 anchors_preset = 15

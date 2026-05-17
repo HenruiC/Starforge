@@ -123,6 +123,14 @@ max_value = 100.0
 value = 0.0
 show_percentage = false
 
+[node name="SkillIcons" type="HBoxContainer" parent="HUD"]
+layout_mode = 0
+offset_left = -50.0
+offset_top = 4.0
+offset_right = 50.0
+offset_bottom = 30.0
+alignment = 1
+
 [node name="StatsLabel" type="Label" parent="HUD"]
 layout_mode = 0
 offset_left = -80.0
