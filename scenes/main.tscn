@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://main001"]
+[gd_scene load_steps=7 format=3 uid="uid://main001"]
 
 [ext_resource type="Script" path="res://scripts/game_manager.gd" id="1_gm"]
 [ext_resource type="Script" path="res://scripts/camera_controller.gd" id="2_cam"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
+[ext_resource type="Script" path="res://scripts/map_manager.gd" id="4_map"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_kill"]
 font_size = 22
@@ -42,6 +43,9 @@ drag_left_margin = 0.2
 drag_right_margin = 0.2
 drag_top_margin = 0.2
 drag_bottom_margin = 0.2
+
+[node name="MapManager" type="Node2D" parent="."]
+script = ExtResource("4_map")
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -1

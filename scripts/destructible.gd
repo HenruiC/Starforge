@@ -1,0 +1,53 @@
+class_name Destructible
+extends StaticBody2D
+
+@export var max_health: int = 20
+@export var drop_xp: int = 25
+@export var object_name: String = "树"
+@export var object_color: Color = Color(0.15, 0.55, 0.15)
+
+var _health: int = 20
+
+@onready var sprite: ColorRect = $Sprite
+@onready var hp_bar: ProgressBar = $HealthBar
+
+func _ready() -> void:
+	_health = max_health
+	sprite.color = object_color
+	add_to_group("destructible")
+
+func take_damage(amount: int) -> void:
+	_health = max(_health - amount, 0)
+	_update_hp()
+
+	# 受击闪烁
+	sprite.modulate = Color.WHITE
+	var t := create_tween()
+	t.tween_property(sprite, "modulate", object_color, 0.1)
+	t.tween_callback(func():
+		if _health <= 0: _destroy()
+	)
+
+	if _health <= 0:
+		_destroy()
+
+func _destroy() -> void:
+	# 掉落经验
+	CombatFeedback.damage_number(global_position, drop_xp, false, true)
+	CombatFeedback.hit_particles(global_position, 8, Color(0.3, 0.7, 0.2))
+
+	# 给玩家经验
+	var players := get_tree().get_nodes_in_group("player")
+	if players.size() > 0 and players[0].has_method("gain_exp"):
+		players[0].gain_exp(drop_xp)
+
+	# 动画
+	var t := create_tween().set_parallel(true)
+	t.tween_property(sprite, "scale", Vector2(0.1, 0.1), 0.3)
+	t.tween_property(sprite, "modulate:a", 0.0, 0.25)
+	t.chain().tween_callback(queue_free)
+
+func _update_hp() -> void:
+	var ratio: float = float(_health) / float(max_health) * 100.0
+	hp_bar.value = ratio
+	hp_bar.visible = ratio < 100.0
