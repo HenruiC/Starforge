@@ -1,6 +1,9 @@
 class_name GameManager
 extends Node2D
 
+# 预加载依赖，确保编译顺序
+const _MissionManagerScript = preload("res://scripts/mission_manager.gd")
+
 # === 生成 ===
 @export var spawn_margin: float = 80.0
 @export var base_spawn_interval: float = 1.5
@@ -27,6 +30,8 @@ var _enemy_scene: PackedScene = preload("res://scenes/enemy.tscn")
 @onready var upgrade_buttons: HBoxContainer = $"../HUDLayer/LevelUpPanel/Buttons"
 @onready var char_select_panel: Control = $"../HUDLayer/CharSelect"
 @onready var char_select_buttons: HBoxContainer = $"../HUDLayer/CharSelect/Buttons"
+@onready var mission_title_label: Label = $"../HUDLayer/HUD/MissionTitle"
+@onready var mission_objectives_label: Label = $"../HUDLayer/HUD/MissionObjectives"
 
 # === 状态 ===
 var _kill_count: int = 0
@@ -37,6 +42,7 @@ var _is_paused: bool = false
 var _screen_size: Vector2
 var _game_started: bool = false
 var _difficulty_scale: float = 1.3
+var _mission_manager: Node = null
 
 func _ready() -> void:
 	_screen_size = get_viewport().get_visible_rect().size
@@ -96,6 +102,13 @@ func _on_preset_selected(preset: String) -> void:
 
 func _on_game_start(_preset: String) -> void:
 	_game_started = true
+
+	# 初始化任务系统
+	_mission_manager = _MissionManagerScript.new()
+	_mission_manager.init(self)
+	add_child(_mission_manager)
+	_update_mission_hud()
+
 	spawn_timer.wait_time = base_spawn_interval
 	spawn_timer.start()
 	wave_timer.wait_time = wave_duration
@@ -174,7 +187,10 @@ func _on_enemy_killed(_pos: Vector2, score: int) -> void:
 		_kill_count += score
 		if player.has_method("gain_exp"):
 			player.gain_exp(15 if score == 1 else (40 if score == 5 else score * 8))
+		if _mission_manager:
+			_mission_manager.notify_kill(score == 5, score >= 10)
 	_update_ui()
+	_update_mission_hud()
 
 func _on_player_died() -> void:
 	_is_game_over = true
@@ -232,6 +248,16 @@ func _on_upgrade_chosen(id: String) -> void:
 func _update_ui() -> void:
 	kill_label.text = "击杀: %d" % _kill_count
 	wave_label.text = "波次 %d" % _current_wave
+
+func _update_mission_hud() -> void:
+	if _mission_manager == null: return
+	mission_title_label.text = _mission_manager.get_stage_title()
+	var lines: String = ""
+	for obj in _mission_manager.get_objective_progress():
+		var done := "✓" if obj["done"] else "□"
+		var pct: String = " (%d/%d)" % [obj["progress"], obj["target"]] if not obj["done"] else ""
+		lines += "%s %s%s\n" % [done, obj["text"], pct]
+	mission_objectives_label.text = lines
 
 func _input(event: InputEvent) -> void:
 	if _is_game_over and event.is_action_pressed("move_up"):

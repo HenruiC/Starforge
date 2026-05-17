@@ -83,6 +83,26 @@ offset_bottom = 64.0
 text = "波次 1"
 label_settings = SubResource("LabelSettings_wave")
 
+[node name="MissionTitle" type="Label" parent="HUDLayer/HUD"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 100.0
+offset_right = 400.0
+offset_bottom = 124.0
+text = ""
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.9, 0.7, 0.2, 1.0)
+
+[node name="MissionObjectives" type="Label" parent="HUDLayer/HUD"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 128.0
+offset_right = 400.0
+offset_bottom = 220.0
+text = ""
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1.0)
+
 [node name="TimerLabel" type="Label" parent="HUDLayer/HUD"]
 layout_mode = 0
 offset_left = 20.0
