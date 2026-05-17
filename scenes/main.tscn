@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scripts/game_manager.gd" id="1_gm"]
 [ext_resource type="Script" path="res://scripts/camera_controller.gd" id="2_cam"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
-[ext_resource type="Script" path="res://scripts/map_manager.gd" id="4_map"]
+[ext_resource type="Script" path="res://scripts/map_school.gd" id="4_map"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_kill"]
 font_size = 22
@@ -49,10 +49,10 @@ script = ExtResource("4_map")
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -1
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 1300.0
-offset_bottom = 740.0
+offset_left = -100.0
+offset_top = -100.0
+offset_right = 3300.0
+offset_bottom = 2500.0
 color = Color(0.06, 0.06, 0.12, 1.0)
 
 [node name="HUDLayer" type="CanvasLayer" parent="."]

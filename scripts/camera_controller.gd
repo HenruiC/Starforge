@@ -8,6 +8,9 @@ var _target: Node2D = null
 
 func _ready() -> void:
 	CombatFeedback.register_camera(self)
+	# 地图边界 3200x2400
+	limit_left = 0; limit_right = 3200
+	limit_top = 0; limit_bottom = 2400
 	var players := get_tree().get_nodes_in_group("player")
 	if players.size() > 0:
 		_target = players[0] as Node2D

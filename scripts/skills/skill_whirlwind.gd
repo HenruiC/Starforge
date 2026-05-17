@@ -2,17 +2,19 @@ class_name SkillWhirlwind
 extends SkillBase
 
 @export var duration: float = 1.5
-@export var ticks_per_second: float = 4.0
+@export var ticks_per_second: float = 5.0
 @export var spin_radius: float = 80.0
 
 var _active: bool = false
 var _elapsed: float = 0.0
 var _tick_timer: float = 0.0
-var _tick_interval: float = 0.25
+var _tick_interval: float = 0.2
 var _original_speed: float = 300.0
 
+func can_execute() -> bool:
+	return not _active  # 旋转中不能再次触发
+
 func execute() -> void:
-	if _active: return
 	_active = true; _elapsed = 0.0; _tick_timer = 0.0
 	_tick_interval = 1.0 / ticks_per_second
 	if "move_speed" in player: _original_speed = player.move_speed
@@ -24,16 +26,32 @@ func _process(delta: float) -> void:
 	_elapsed += delta; _tick_timer += delta
 	if _tick_timer >= _tick_interval:
 		_tick_timer -= _tick_interval
-		_tick_damage(); _spin_particles()
+		_tick_damage()
+		_spin_particles()
 	if _elapsed >= duration:
-		_active = false
-		if "move_speed" in player: player.set("move_speed", _original_speed)
+		_end_spin()
+
+func _end_spin() -> void:
+	_active = false
+	is_ready = true; cooldown_remaining = 0.0
+	if "move_speed" in player: player.set("move_speed", _original_speed)
 
 func _tick_damage() -> void:
 	if attack_area == null: return
-	for body in attack_area.get_overlapping_bodies():
-		if body.is_in_group("enemy") and body.has_method("take_damage") and not body.is_dead:
-			body.take_damage(int(float(damage) * 0.35))
+	var bodies := attack_area.get_overlapping_bodies()
+	for body in bodies:
+		if not body.is_in_group("enemy"): continue
+		if not body.has_method("take_damage"): continue
+		var dead: bool = body.get("is_dead") if body.get("is_dead") != null else false
+		if dead: continue
+		body.take_damage(int(float(damage) * 0.35))
+		# 每次命中触发微顿帧
+		CombatFeedback.hit_stop(1)
+
+	# 也打击可破坏物
+	for body in bodies:
+		if body.is_in_group("destructible") and body.has_method("take_damage"):
+			body.take_damage(int(float(damage) * 0.25))
 
 func _spin_visual() -> void:
 	for i in 4:

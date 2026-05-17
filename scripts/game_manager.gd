@@ -155,13 +155,19 @@ func _spawn_ranged_enemy() -> void:
 	enemies.add_child(e)
 
 func _random_spawn_position() -> Vector2:
+	# 以玩家为中心，在屏幕外生成
+	var cam_pos := Vector2(1600, 1200)  # 默认地图中心
+	if player:
+		cam_pos = player.global_position
+	var view_w := 1280.0 / 1.2  # 视口/缩放
+	var view_h := 720.0 / 1.2
+
 	var side := randi() % 4
-	var x := _screen_size.x; var y := _screen_size.y
 	match side:
-		0: return Vector2(randf_range(0, x), -spawn_margin)
-		1: return Vector2(randf_range(0, x), y + spawn_margin)
-		2: return Vector2(-spawn_margin, randf_range(0, y))
-		_: return Vector2(x + spawn_margin, randf_range(0, y))
+		0: return Vector2(randf_range(cam_pos.x - view_w/2, cam_pos.x + view_w/2), cam_pos.y - view_h/2 - spawn_margin)
+		1: return Vector2(randf_range(cam_pos.x - view_w/2, cam_pos.x + view_w/2), cam_pos.y + view_h/2 + spawn_margin)
+		2: return Vector2(cam_pos.x - view_w/2 - spawn_margin, randf_range(cam_pos.y - view_h/2, cam_pos.y + view_h/2))
+		_: return Vector2(cam_pos.x + view_w/2 + spawn_margin, randf_range(cam_pos.y - view_h/2, cam_pos.y + view_h/2))
 
 func _on_enemy_killed(_pos: Vector2, score: int) -> void:
 	if score > 0:
