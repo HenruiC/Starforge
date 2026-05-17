@@ -41,7 +41,18 @@ func try_execute() -> bool:
 	is_ready = false
 	cooldown_remaining = cooldown
 	execute()
+	_trigger_feedback()
 	return true
+
+func _trigger_feedback() -> void:
+	if damage >= 30:
+		CombatFeedback.big_hit_stop()
+		CombatFeedback.screen_shake(4.0)
+	elif damage >= 15:
+		CombatFeedback.hit_stop()
+		CombatFeedback.screen_shake(2.0)
+	else:
+		CombatFeedback.screen_shake(1.0)
 
 func can_execute() -> bool:
 	return true

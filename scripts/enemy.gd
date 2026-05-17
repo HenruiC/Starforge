@@ -118,6 +118,8 @@ func take_damage(amount: int) -> void:
 	_health = max(_health - actual, 0)
 	_update_hp()
 
+	# 伤害数字
+	CombatFeedback.damage_number(global_position, actual, amount >= 30)
 	# 受击特效
 	_show_hit_effect()
 
@@ -160,6 +162,12 @@ func knockback(force: Vector2) -> void:
 func _die() -> void:
 	is_dead = true
 	EventBus.enemy_killed.emit(global_position, score_value)
+
+	# 击杀粒子爆发
+	if is_elite:
+		CombatFeedback.kill_explosion(global_position)
+	else:
+		CombatFeedback.hit_particles(global_position, 4, Color(1.0, 0.5, 0.1))
 
 	# 死亡扩散特效
 	var tween := create_tween().set_parallel(true)

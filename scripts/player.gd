@@ -135,6 +135,7 @@ func apply_upgrade(upgrade_id: String) -> void:
 				skill_manager.skills[idx].apply_level_up()
 		"heal":
 			_health = max_health
+			CombatFeedback.damage_number(global_position, max_health, false, true)
 
 	_update_all_ui()
 	_update_skill_icons()

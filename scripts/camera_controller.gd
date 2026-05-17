@@ -7,6 +7,7 @@ extends Camera2D
 var _target: Node2D = null
 
 func _ready() -> void:
+	CombatFeedback.register_camera(self)
 	var players := get_tree().get_nodes_in_group("player")
 	if players.size() > 0:
 		_target = players[0] as Node2D
