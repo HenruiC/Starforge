@@ -9,6 +9,7 @@ extends CharacterBody2D
 @export var xp_value: int = 15
 @export var is_elite: bool = false
 @export var is_ranged: bool = false
+@export var is_boss: bool = false
 
 # 远程攻击
 @export var ranged_damage: int = 10
@@ -43,6 +44,8 @@ func _ready() -> void:
 	# 精英外观
 	if is_elite:
 		_setup_elite()
+	if is_boss:
+		_setup_boss()
 
 func _setup_elite() -> void:
 	sprite.color = Color(0.7, 0.2, 0.9, 1.0)
@@ -52,17 +55,30 @@ func _setup_elite() -> void:
 	sprite.offset_top = -18
 	sprite.offset_right = 18
 	sprite.offset_bottom = 18
-	# 精英光环
 	var glow := ColorRect.new()
 	glow.name = "EliteGlow"
 	glow.color = Color(0.7, 0.2, 0.9, 0.25)
-	glow.offset_left = -22
-	glow.offset_top = -22
-	glow.offset_right = 22
-	glow.offset_bottom = 22
+	glow.offset_left = -22; glow.offset_top = -22
+	glow.offset_right = 22; glow.offset_bottom = 22
 	glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(glow)
-	move_child(glow, 0)
+	add_child(glow); move_child(glow, 0)
+
+func _setup_boss() -> void:
+	sprite.color = Color(0.9, 0.1, 0.05, 1.0)
+	sprite.scale = Vector2(3.0, 3.0)
+	sprite.offset_left = -32; sprite.offset_top = -32
+	sprite.offset_right = 32; sprite.offset_bottom = 32
+	hp_bar.custom_minimum_size = Vector2(80, 6)
+	# Boss光环(红色脉冲)
+	var glow := ColorRect.new()
+	glow.name = "BossGlow"; glow.color = Color(1.0, 0.5, 0.1, 0.35)
+	glow.offset_left = -40; glow.offset_top = -40
+	glow.offset_right = 40; glow.offset_bottom = 40
+	glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(glow); move_child(glow, 0)
+	var t := create_tween().set_loops(0)
+	t.tween_property(glow, "modulate:a", 0.1, 0.5)
+	t.tween_property(glow, "modulate:a", 0.35, 0.5)
 
 func _physics_process(delta: float) -> void:
 	if is_dead or _player_ref == null:

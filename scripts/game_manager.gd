@@ -106,6 +106,8 @@ func _on_game_start(_preset: String) -> void:
 	# 初始化任务系统
 	_mission_manager = _MissionManagerScript.new()
 	_mission_manager.init(self)
+	_mission_manager.stage_cleared.connect(_on_stage_cleared)
+	_mission_manager.boss_spawned.connect(_on_boss_spawn)
 	add_child(_mission_manager)
 	_update_mission_hud()
 
@@ -248,6 +250,24 @@ func _on_upgrade_chosen(id: String) -> void:
 func _update_ui() -> void:
 	kill_label.text = "击杀: %d" % _kill_count
 	wave_label.text = "波次 %d" % _current_wave
+
+func _on_stage_cleared(stage: int) -> void:
+	# 阶段完成奖励
+	CombatFeedback.screen_shake(8.0)
+	CombatFeedback.big_hit_stop()
+
+func _on_boss_spawn(_boss_name: String) -> void:
+	var e: CharacterBody2D = _enemy_scene.instantiate()
+	e.global_position = Vector2(1600, 1800)  # 操场中央
+	e.is_boss = true
+	e.max_health = 500
+	e.move_speed = 60
+	e.contact_damage = 25
+	e.score_value = 10; e.xp_value = 100
+	e.ranged_damage = 20; e.ranged_cooldown = 3.0
+	e.is_ranged = true  # Boss也会远程攻击
+	enemies.add_child(e)
+	EventBus.wave_changed.emit(-1)  # Boss信号
 
 func _update_mission_hud() -> void:
 	if _mission_manager == null: return

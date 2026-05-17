@@ -9,6 +9,10 @@ extends CharacterBody2D
 @export var attack_range: float = 120.0
 @export var contact_damage_cooldown: float = 1.0
 
+# 武器系统
+@export var weapon_type: String = "sword"
+@export var weapon_multiplier: float = 1.0
+
 # 成长
 @export var level: int = 1
 @export var exp: int = 0
@@ -50,6 +54,20 @@ func init_skills(preset: String) -> void:
 	skill_manager = SkillManager.new()
 	skill_manager.init(self, get_parent() if get_parent() else self, attack_area, preset)
 	add_child(skill_manager)
+
+	# 职业武器差异化
+	match preset:
+		"swordsman":
+			weapon_type = "sword"; weapon_multiplier = 1.2; move_speed = 280
+			attack_range = 130; defense += 2
+		"archer":
+			weapon_type = "bow"; weapon_multiplier = 0.9; move_speed = 340
+			attack_range = 170; attack_power += 5
+		"mage":
+			weapon_type = "staff"; weapon_multiplier = 1.5; move_speed = 260
+			attack_range = 140; attack_power -= 3
+	(attack_shape.shape as CircleShape2D).radius = attack_range
+
 	_update_skill_icons()
 	preset_chosen.emit(preset)
 
