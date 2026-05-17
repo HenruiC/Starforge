@@ -1,0 +1,4 @@
+res://scenes/enemy.tscn
+res://scripts/enemy.gd
+res://scripts/game_manager.gd
+res://scripts/player.gd
