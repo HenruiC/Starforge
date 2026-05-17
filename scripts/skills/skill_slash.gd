@@ -64,3 +64,22 @@ func _spawn_slash_vfx() -> void:
 		ft.tween_property(flash, "scale", Vector2(1.8, 1.8), 0.08)
 		ft.tween_property(flash, "modulate:a", 0.0, 0.1)
 		ft.chain().tween_callback(flash.queue_free)
+
+	# 残影 — 小岛要求：斩击线消失后留0.1秒白色轨迹
+	_spawn_afterimages(mid, angle, dist, colors, offs)
+
+func _spawn_afterimages(mid: Vector2, angle: float, dist: float, colors: Array, offs: Array) -> void:
+	# 等待0.12秒（斩击线消失后）再生成残影
+	var t := create_tween()
+	t.tween_interval(0.1)
+	t.tween_callback(func():
+		if effect_parent == null: return
+		for i in 3:
+			var ghost := _create_effect_rect(Color.WHITE, Vector2(20, 3), mid, 8)
+			ghost.rotation = angle + [0.0, -0.25, 0.25][i]
+			ghost.scale = Vector2(maxf(dist / 8.0, 1.0) * 0.6, 0.3)
+			ghost.modulate.a = 0.3
+			var gt := create_tween()
+			gt.tween_property(ghost, "modulate:a", 0.0, 0.15)
+			gt.tween_callback(ghost.queue_free)
+	)

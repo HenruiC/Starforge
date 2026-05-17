@@ -30,3 +30,21 @@ func _spawn_aoe_vfx() -> void:
 	it.tween_property(inner, "scale", Vector2(2.5, 2.5), 0.15)
 	it.tween_property(inner, "modulate:a", 0.0, 0.18)
 	it.chain().tween_callback(inner.queue_free)
+
+	# 地面裂纹 — 小岛要求：放射状短线模拟冲击波裂纹
+	_spawn_ground_cracks()
+
+func _spawn_ground_cracks() -> void:
+	var crack_count := 12
+	for i in crack_count:
+		var angle := float(i) * TAU / float(crack_count)
+		var start_dist := randf_range(visual_radius * 0.3, visual_radius * 1.2)
+		var length := randf_range(8, 20)
+		var start_pos := player.global_position + Vector2.RIGHT.rotated(angle) * start_dist
+		var crack := _create_effect_rect(Color(0.9, 0.85, 0.7, 0.5), Vector2(length, 1.5), start_pos, 9)
+		crack.rotation = angle + randf_range(-0.15, 0.15)
+		crack.scale = Vector2(0.1, 0.5)
+		var ct := create_tween().set_parallel(true)
+		ct.tween_property(crack, "scale", Vector2(1.0, 1.0), 0.15)
+		ct.tween_property(crack, "modulate:a", 0.0, 0.22)
+		ct.chain().tween_callback(crack.queue_free)
