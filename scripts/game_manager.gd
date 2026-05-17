@@ -155,6 +155,8 @@ func _on_level_up_available(_count: int) -> void:
 func _show_level_up_choices() -> void:
 	_is_paused = true
 	get_tree().paused = true
+	# 让升级面板不受暂停影响，按钮可点击
+	$"../HUDLayer".process_mode = Node.PROCESS_MODE_ALWAYS
 
 	level_up_panel.visible = true
 
@@ -199,6 +201,7 @@ func _on_upgrade_chosen(upgrade_id: String) -> void:
 
 	level_up_panel.visible = false
 	_is_paused = false
+	$"../HUDLayer".process_mode = Node.PROCESS_MODE_INHERIT
 	get_tree().paused = false
 
 	if player._pending_level_ups > 0:

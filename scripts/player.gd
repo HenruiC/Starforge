@@ -122,18 +122,45 @@ func _attack_current_target() -> void:
 	_show_slash_effect()
 
 func _show_slash_effect() -> void:
-	var slash: ColorRect = $SlashEffect
-	if _current_target:
-		var dir := global_position.direction_to(_current_target.global_position)
-		slash.rotation = dir.angle()
-	slash.visible = true
-	slash.modulate = Color(1.0, 0.9, 0.6, 0.7)
-	slash.scale = Vector2(0.3, 1.0)
+	if _current_target == null or not is_instance_valid(_current_target):
+		return
 
+	# 在玩家到目标之间生成斩击弧线
+	var to_target := _current_target.global_position - global_position
+	var mid_point := global_position + to_target * 0.5
+	var angle := to_target.angle()
+
+	# 主斩击线
+	var slash := _create_slash_line(mid_point, angle, Color(1.0, 0.95, 0.7), Vector2(2.0, 0.8))
+	# 辅助弧光
+	var slash2 := _create_slash_line(mid_point + Vector2(0, -8).rotated(angle), angle + 0.3, Color(1.0, 0.8, 0.3), Vector2(1.5, 0.5))
+	var slash3 := _create_slash_line(mid_point + Vector2(0, 8).rotated(angle), angle - 0.3, Color(1.0, 0.8, 0.3), Vector2(1.5, 0.5))
+
+	# 动画
+	var dist := to_target.length()
+	var dur := 0.15
 	var tween := create_tween().set_parallel(true)
-	tween.tween_property(slash, "scale", Vector2(1.5, 0.3), 0.12)
-	tween.tween_property(slash, "modulate:a", 0.0, 0.12)
-	tween.chain().tween_callback(func(): slash.visible = false)
+	for s in [slash, slash2, slash3]:
+		tween.tween_property(s, "scale", Vector2(dist / 10.0, 0.8), dur)
+		tween.tween_property(s, "modulate:a", 0.0, dur)
+	tween.chain().tween_callback(func():
+		slash.queue_free(); slash2.queue_free(); slash3.queue_free()
+	)
+
+func _create_slash_line(at_pos: Vector2, rot: float, col: Color, start_scale: Vector2) -> ColorRect:
+	var s := ColorRect.new()
+	s.color = col
+	s.offset_left = -15
+	s.offset_top = -2
+	s.offset_right = 15
+	s.offset_bottom = 2
+	s.rotation = rot
+	s.scale = start_scale
+	s.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	s.z_index = 10
+	get_parent().add_child(s)
+	s.global_position = at_pos
+	return s
 
 func _do_aoe_attack() -> void:
 	aoe_sprite.visible = true
