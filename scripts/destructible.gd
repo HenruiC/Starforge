@@ -32,14 +32,15 @@ func take_damage(amount: int) -> void:
 		_destroy()
 
 func _destroy() -> void:
-	# 掉落经验
-	CombatFeedback.damage_number(global_position, drop_xp, false, true)
-	CombatFeedback.hit_particles(global_position, 8, Color(0.3, 0.7, 0.2))
+	# 破坏粒子
+	CombatFeedback.hit_particles(global_position, 6, Color(0.5, 0.4, 0.3))
 
-	# 给玩家经验
-	var players := get_tree().get_nodes_in_group("player")
-	if players.size() > 0 and players[0].has_method("gain_exp"):
-		players[0].gain_exp(drop_xp)
+	# 只有树木类给经验 (drop_xp > 0 且不是建筑)
+	if drop_xp > 0 and object_name not in ["墙壁", "课桌"]:
+		CombatFeedback.damage_number(global_position, drop_xp, false, true)
+		var players := get_tree().get_nodes_in_group("player")
+		if players.size() > 0 and players[0].has_method("gain_exp"):
+			players[0].gain_exp(drop_xp)
 
 	# 动画
 	var t := create_tween().set_parallel(true)
