@@ -41,8 +41,11 @@ func _spin_visual() -> void:
 		var blade := _create_effect_rect(Color(0.7, 0.85, 1.0, 0.5), Vector2(spin_radius * 1.5, 3), player.global_position, 14)
 		blade.rotation = angle
 		var t := create_tween()
-		t.tween_property(blade, "rotation", angle + TAU, 0.25).set_loops(int(duration * 4))
-		create_tween().tween_interval(duration).tween_callback(blade.queue_free)
+		t.set_loops(int(duration * 4))
+		t.tween_property(blade, "rotation", angle + TAU, 0.25)
+		var cleanup := create_tween()
+		cleanup.tween_interval(duration)
+		cleanup.tween_callback(blade.queue_free)
 
 func _spin_particles() -> void:
 	var angle := randf_range(0, TAU); var dist := randf_range(spin_radius * 0.3, spin_radius)
