@@ -74,8 +74,8 @@ func _show_char_select() -> void:
 	narrative.add_theme_font_size_override("font_size", 14)
 	narrative.add_theme_color_override("font_color", Color(0.65, 0.6, 0.45, 1.0))
 	narrative.anchor_left = 0.5; narrative.anchor_right = 0.5
-	narrative.offset_left = -300; narrative.offset_top = 350
-	narrative.offset_right = 300; narrative.offset_bottom = 395
+	narrative.offset_left = -350; narrative.offset_top = 130
+	narrative.offset_right = 350; narrative.offset_bottom = 170
 	$"../HUDLayer/CharSelect".add_child(narrative)
 
 	for child in char_select_buttons.get_children():
