@@ -12,18 +12,7 @@ func init(player_ref: CharacterBody2D, hud_layer: CanvasLayer) -> void:
 	_player = player_ref
 	var mp := hud_layer.get_node("MapPanel")
 	var tr: TextureRect = mp.get_node("MapTexture")
-	var paths := ["res://assets/generated/map_full.jpg", "user://../assets/generated/map_full.jpg"]
-	var loaded := false
-	for path in paths:
-		if ResourceLoader.exists(path):
-			tr.texture = load(path) as Texture2D
-			loaded = true
-			break
-	if not loaded:
-		var img := Image.new()
-		if img.load("D:/AI/GodotProjects/combat-demo/assets/generated/map_full.jpg") == OK:
-			tr.texture = ImageTexture.create_from_image(img)
-			loaded = true
+	tr.texture = AssetLoader.texture("map_full", 512, Color(0.1, 0.1, 0.15))
 	# 初始化迷雾
 	var cw := 80.0; var cols := int(ceil(3200.0 / cw)); var rows := int(ceil(2400.0 / cw))
 	_fog_total = cols * rows

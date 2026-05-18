@@ -155,18 +155,9 @@ func _mk_zone(title: String, color: Color) -> VBoxContainer:
 	vb.add_child(l)
 	return vb
 
-func _load_icon(icon_name: String) -> Texture2D:
-	var path := "res://assets/generated/" + icon_name + ".jpg"
-	if ResourceLoader.exists(path): return load(path) as Texture2D
-	return null
-
 func _mk_btn(icon_key: String, title: String, desc: String, color: Color) -> Button:
 	var b := Button.new()
-	# icon_key = "weapon_sword" / "icon_slash" 等
-	# 尝试武器图标 → 技能图标
-	var tex := _load_icon(icon_key)
-	if tex == null: tex = _load_icon("icon_" + icon_key)
-	b.icon = tex
+	b.icon = AssetLoader.texture(icon_key, 48, color)
 	b.text = title + "\n" + desc
 	b.custom_minimum_size = Vector2(170, 55)
 	b.expand_icon = true
