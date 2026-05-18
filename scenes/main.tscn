@@ -19,7 +19,7 @@ font_color = Color(0.8, 0.7, 0.3, 1.0)
 script = ExtResource("1_gm")
 
 [node name="Player" parent="GameManager" instance=ExtResource("3_player")]
-position = Vector2(640, 360)
+position = Vector2(1600, 2200)
 
 [node name="Enemies" type="Node2D" parent="GameManager"]
 

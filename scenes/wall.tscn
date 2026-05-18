@@ -12,6 +12,7 @@ script = ExtResource("1_script")
 object_name = "墙壁"
 max_health = 150
 drop_xp = 0
+indestructible = true
 object_color = Color(0.5, 0.45, 0.4, 1.0)
 
 [node name="Sprite" type="ColorRect" parent="."]

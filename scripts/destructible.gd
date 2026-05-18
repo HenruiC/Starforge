@@ -40,6 +40,12 @@ func _destroy() -> void:
 	# 破坏粒子
 	CombatFeedback.hit_particles(global_position, 6, Color(0.5, 0.4, 0.3))
 
+	# 通知任务系统 (课桌破坏算教室清理进度)
+	if object_name == "课桌":
+		var gm := get_tree().get_first_node_in_group("game_manager")
+		if gm and gm.has_method("notify_desk"):
+			gm.notify_desk()
+
 	# 只有树木类给经验 (drop_xp > 0 且不是建筑)
 	if drop_xp > 0 and object_name not in ["墙壁", "课桌"]:
 		CombatFeedback.damage_number(global_position, drop_xp, false, true)

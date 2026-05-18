@@ -45,6 +45,7 @@ var _difficulty_scale: float = 1.3
 var _mission_manager: Node = null
 
 func _ready() -> void:
+	add_to_group("game_manager")
 	_screen_size = get_viewport().get_visible_rect().size
 	game_over_panel.visible = false
 	level_up_panel.visible = false
@@ -67,11 +68,13 @@ func _show_char_select() -> void:
 	# 小岛: 开场叙事 (动态创建)
 	var narrative := Label.new()
 	narrative.name = "Narrative"
-	narrative.text = "\"末日降临的那天，所有人都觉醒了天赋。\n而我，只有D级的【天赋适应】。\n他们说我是废物。\n但今天——在这座沦陷的学校里，\n我要证明他们错了。\""
+	narrative.text = "\"那一天，所有人都觉醒了天赋。\n而我，只有D级的——天赋适应。\"\n\n[ 选择你的天赋与武器，踏入试炼 ]"
 	narrative.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	narrative.add_theme_font_size_override("font_size", 15)
 	narrative.add_theme_color_override("font_color", Color(0.7, 0.65, 0.5, 1.0))
-	narrative.position = Vector2(-350, 340); narrative.size = Vector2(700, 120)
+	narrative.anchor_left = 0.5; narrative.anchor_right = 0.5
+	narrative.offset_left = -300; narrative.offset_top = 340
+	narrative.offset_right = 300; narrative.offset_bottom = 440
 	$"../HUDLayer/CharSelect".add_child(narrative)
 
 	for child in char_select_buttons.get_children():
@@ -115,7 +118,7 @@ func _on_game_start(_preset: String) -> void:
 
 	# 初始化任务系统
 	_mission_manager = _MissionManagerScript.new()
-	_mission_manager.init(self)
+	_mission_manager.init()
 	_mission_manager.stage_cleared.connect(_on_stage_cleared)
 	_mission_manager.boss_spawned.connect(_on_boss_spawn)
 	add_child(_mission_manager)
@@ -132,6 +135,11 @@ func _process(delta: float) -> void:
 		return
 	_wave_elapsed += delta
 	timer_label.text = "剩余: %.0fs" % maxf(wave_duration - _wave_elapsed, 0.0)
+
+	# 任务计时器
+	if _mission_manager:
+		_mission_manager.notify_timer(delta)
+		_update_mission_hud()
 
 func _on_spawn_timer_timeout() -> void:
 	if _is_game_over or not _game_started:
@@ -200,7 +208,7 @@ func _on_enemy_killed(_pos: Vector2, score: int) -> void:
 		if player.has_method("gain_exp"):
 			player.gain_exp(15 if score == 1 else (40 if score == 5 else score * 8))
 		if _mission_manager:
-			_mission_manager.notify_kill(score == 5, score >= 10)
+			_mission_manager.notify_kill()
 	_update_ui()
 	_update_mission_hud()
 
@@ -279,14 +287,24 @@ func _on_boss_spawn(_boss_name: String) -> void:
 	enemies.add_child(e)
 	EventBus.wave_changed.emit(-1)  # Boss信号
 
+func notify_desk_destroyed() -> void:
+	if _mission_manager:
+		_mission_manager.notify_desk()
+
 func _update_mission_hud() -> void:
 	if _mission_manager == null: return
-	mission_title_label.text = _mission_manager.get_stage_title()
+	mission_title_label.text = _mission_manager.get_title()
 	var lines: String = ""
-	for obj in _mission_manager.get_objective_progress():
-		var done := "✓" if obj["done"] else "□"
-		var pct: String = " (%d/%d)" % [obj["progress"], obj["target"]] if not obj["done"] else ""
-		lines += "%s %s%s\n" % [done, obj["text"], pct]
+	for obj in _mission_manager.get_objectives():
+		var done: bool = float(obj["progress"]) >= float(obj["target"])
+		var mark := "✓" if done else "□"
+		var pv = obj["progress"]; var tv = obj["target"]
+		var pct: String = ""
+		if typeof(pv) == TYPE_FLOAT:
+			pct = " (%.0f/%.0fs)" % [float(pv), float(tv)] if not done else ""
+		else:
+			pct = " (%d/%d)" % [int(pv), int(tv)] if not done else ""
+		lines += "%s %s%s\n" % [mark, obj["text"], pct]
 	mission_objectives_label.text = lines
 
 func _input(event: InputEvent) -> void:
