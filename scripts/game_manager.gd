@@ -294,11 +294,27 @@ func _spawn_ranged_enemy() -> void:
 	enemies.add_child(e)
 
 func _random_spawn_position() -> Vector2:
-	var center := player.global_position if player else Vector2(1600,1200)
+	# 根据任务阶段决定生成区域
+	var stage: int = _mission_manager.get_current_stage() if _mission_manager else 1
+	var center := player.global_position if player else Vector2(1600, 2200)
 	var nav: Node = get_node_or_null("../NavManager")
+
+	# 阶段1: 校门→主干道(南部)
+	if stage == 1:
+		var y_range := Vector2(1800, 2200)  # 下半区
+		center = Vector2(randf_range(800, 2400), randf_range(y_range.x, y_range.y))
+	# 阶段2: 教学楼区域(中部)
+	elif stage == 2:
+		var side := randi() % 2
+		if side == 0: center = Vector2(randf_range(400, 1400), randf_range(800, 1600))  # 左楼
+		else: center = Vector2(randf_range(1800, 2800), randf_range(800, 1600))  # 右楼
+	# 阶段3: 连廊→体育馆方向(北部)
+	elif stage >= 3:
+		center = Vector2(randf_range(1200, 2000), randf_range(300, 1000))
+
 	if nav and nav.has_method("get_random_nav_point"):
 		return nav.get_random_nav_point(center)
-	return center + Vector2(randf_range(-600,600), randf_range(-600,600))
+	return center + Vector2(randf_range(-400,400), randf_range(-400,400))
 
 func _on_enemy_killed(_pos: Vector2, score: int) -> void:
 	if score > 0:
