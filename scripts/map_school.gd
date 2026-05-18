@@ -8,7 +8,25 @@ var _d:=preload("res://scenes/door.tscn")
 var _dk:=preload("res://scenes/desk.tscn")
 var _tr:=preload("res://scenes/destructible.tscn")
 
-func _ready()->void:_build()
+func _ready()->void:
+	_add_floor()
+	_build()
+
+func _add_floor()->void:
+	# 铺设地板纹理(TileMap替代方案: 大面积TextureRect)
+	var floor_tex := AssetLoader.texture("floor_tile", 256, Color(0.1,0.1,0.12))
+	var cols := int(ceil(MW/256.0))
+	var rows := int(ceil(MH/256.0))
+	for x in cols:
+		for y in rows:
+			var tr := TextureRect.new()
+			tr.texture = floor_tex
+			tr.size = Vector2(256,256)
+			tr.position = Vector2(x*256, y*256)
+			tr.z_index = -2
+			tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			tr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			add_child(tr)
 
 func _build()->void:
 	# 边界
