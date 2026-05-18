@@ -1,12 +1,12 @@
-[gd_scene load_steps=10 format=3 uid="uid://main001"]
+[gd_scene load_steps=9 format=3 uid="uid://main001"]
 
 [ext_resource type="Script" path="res://scripts/game_manager.gd" id="1_gm"]
 [ext_resource type="Script" path="res://scripts/camera_controller.gd" id="2_cam"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
-[ext_resource type="Script" path="res://scripts/map_school.gd" id="4_map"]
 [ext_resource type="PackedScene" path="res://scenes/dialogue_panel.tscn" id="5_dlg"]
 [ext_resource type="Script" path="res://scripts/map_system.gd" id="6_map_sys"]
 [ext_resource type="Script" path="res://scripts/nav_manager.gd" id="7_nav"]
+[ext_resource type="Script" path="res://scripts/tilemap_builder.gd" id="8_tb"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_kill"]
 font_size = 22
@@ -50,8 +50,9 @@ drag_bottom_margin = 0.2
 [node name="NavManager" type="Node2D" parent="."]
 script = ExtResource("7_nav")
 
-[node name="MapManager" type="Node2D" parent="."]
-script = ExtResource("4_map")
+[node name="TilemapBuilder" type="Node2D" parent="."]
+script = ExtResource("8_tb")
+z_index = -1
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -1
