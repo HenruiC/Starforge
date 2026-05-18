@@ -9,8 +9,8 @@ var _player: CharacterBody2D
 func init(player_ref: CharacterBody2D, hud_layer: CanvasLayer) -> void:
 	_player = player_ref
 	var mp := hud_layer.get_node("MapPanel")
-	var tr: TextureRect = mp.get_node("MapTexture")
-	tr.texture = AssetLoader.texture("map_full", 512, Color(0.1, 0.1, 0.15))
+	var tr2: TextureRect = mp.get_node("MapTexture")
+	tr2.texture = AssetLoader.texture("map_full", 512, Color(0.1, 0.1, 0.15))
 	var cw := 80.0
 	var cols := int(ceil(3200.0 / cw))
 	var rows := int(ceil(2400.0 / cw))

@@ -101,8 +101,8 @@ func get_skill(index: int) -> SkillBase:
 		return skills[index]
 	return null
 
-func get_cooldowns() -> Array[Dictionary]:
-	var cd: Array[Dictionary] = []
+func get_cooldowns() -> Array:
+	var cd: Array = []
 	for s in skills:
 		cd.append({
 			"name": s.skill_name,
@@ -111,7 +111,9 @@ func get_cooldowns() -> Array[Dictionary]:
 		})
 	return cd
 
-func get_upgrade_pool() -> Array[Dictionary]:
+func get_upgrade_pool() -> Array:
+	if skills.size() < 3:
+		return [{"id":"atk","name":"攻击","desc":"伤害+3","icon":"⚔"}]
 	return [
 		{"id": "atk", "name": "攻击强化", "desc": "全技能伤害+3", "icon": "⚔"},
 		{"id": "spd", "name": "敏捷强化", "desc": "移速+20/全CD-8%", "icon": "👟"},

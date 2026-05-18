@@ -351,7 +351,7 @@ func _show_upgrade_panel() -> void:
 		var btn := Button.new()
 		btn.text = "%s %s\n%s" % [opt.icon, opt.name, opt.desc]
 		btn.custom_minimum_size = Vector2(180, 80)
-		btn.pressed.connect(func(): _on_upgrade_chosen(opt.id))
+		var oid: String = opt.id; btn.pressed.connect(func(): _on_upgrade_chosen(oid))
 		var s := _mk_style(Color(0.5, 0.4, 0.1, 1.0))
 		btn.add_theme_stylebox_override("normal", s)
 		var h := s.duplicate() as StyleBoxFlat
