@@ -116,11 +116,11 @@ func get_upgrade_pool() -> Array:
 		return [{"id":"atk","name":"攻击","desc":"伤害+3","icon":"⚔"}]
 	return [
 		{"id": "atk", "name": "攻击强化", "desc": "全技能伤害+3", "icon": "⚔"},
-		{"id": "spd", "name": "敏捷强化", "desc": "移速+20/全CD-8%", "icon": "👟"},
+		{"id": "spd", "name": "敏捷强化", "desc": "移速+20/CD-8%%", "icon": "👟"},
 		{"id": "def", "name": "防御强化", "desc": "DEF+2/MaxHP+25", "icon": "🛡"},
-		{"id": "skill1", "name": "%s强化" % skills[0].skill_name, "desc": "%s伤害+8/CD-10%" % skills[0].skill_name, "icon": skills[0].icon},
-		{"id": "skill2", "name": "%s强化" % skills[1].skill_name, "desc": "%s伤害+8/CD-10%" % skills[1].skill_name, "icon": skills[1].icon},
-		{"id": "skill3", "name": "%s强化" % skills[2].skill_name, "desc": "%s伤害+8/CD-10%" % skills[2].skill_name, "icon": skills[2].icon},
+		{"id": "skill1", "name": skills[0].skill_name + "强化", "desc": skills[0].skill_name + "伤害+8/CD-10%%", "icon": skills[0].icon},
+		{"id": "skill2", "name": skills[1].skill_name + "强化", "desc": skills[1].skill_name + "伤害+8/CD-10%%", "icon": skills[1].icon},
+		{"id": "skill3", "name": skills[2].skill_name + "强化", "desc": skills[2].skill_name + "伤害+8/CD-10%%", "icon": skills[2].icon},
 		{"id": "heal", "name": "生命恢复", "desc": "HP完全恢复", "icon": "❤"},
 	]
 

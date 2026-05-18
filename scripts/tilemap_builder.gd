@@ -86,6 +86,9 @@ func _draw_all() -> void:
 	_label(bx + bw / 2, by + bh / 2, "左楼"); _label(rx + bw / 2, ry2 + bh / 2, "右楼")
 	_label(gx, gym_y + 9, "体育馆")
 
+	# 强制刷新TileMap渲染
+	tm.update_internals()
+
 func _building(x: int, y: int, bw: int, bh: int, W: Vector2i, D: Vector2i) -> void:
 	for xx in range(x, x + bw):
 		tm.set_cell(1, Vector2i(xx, y), 1, W)

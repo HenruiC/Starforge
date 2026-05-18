@@ -231,6 +231,7 @@ func _try_start() -> void:
 	char_select_panel.visible = false
 	$"../HUDLayer".process_mode = Node.PROCESS_MODE_INHERIT
 	_is_paused = false
+	GameState.set_state(GameState.State.PLAYING)
 	player.init_skills(sel_talents.duplicate(), sel_wp)
 
 func _on_game_start(_preset: String) -> void:

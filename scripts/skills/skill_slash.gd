@@ -46,8 +46,11 @@ func _find_target() -> void:
 			if d < min_d: min_d = d; _target = b
 
 func _spawn_slash_vfx_dir(dir: Vector2, hit_pos: Vector2) -> void:
-	var mid := player.global_position + dir * 60
-	var angle := dir.angle(); var dist := player.global_position.distance_to(hit_pos)
+	# 特效从玩家延伸到命中点(或120距离的无命中位置)
+	var dist := player.global_position.distance_to(hit_pos)
+	if dist > 180: dist = 120.0
+	var mid := player.global_position + dir * (dist * 0.5)
+	var angle := dir.angle()
 
 	var colors := [Color(1.0, 0.95, 0.6), Color(1.0, 0.7, 0.2), Color(1.0, 0.5, 0.1)]
 	var offs := [0.0, -10.0, 10.0]
