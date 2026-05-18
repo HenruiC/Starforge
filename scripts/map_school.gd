@@ -109,7 +109,7 @@ func _h(p: PackedScene, x1: float, y1: float, x2: float, y2: float) -> void:
 func _door(x: float, y: float, c: Color) -> void:
 	var d := _d.instantiate(); d.global_position = Vector2(x, y); add_child(d)
 	var sp := d.get_node_or_null("Sprite") as ColorRect
-	if sp: sp.color = c; sp.scale = Vector2(1.8, 1.0)
+	if sp: sp.color = c; sp.scale = Vector2(3.0, 2.0)  # 3倍宽2倍高，显眼
 
 func _tree(x: float, y: float) -> void:
 	var t := _tr.instantiate()
