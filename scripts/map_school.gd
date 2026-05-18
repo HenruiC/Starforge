@@ -24,7 +24,7 @@ func _build() -> void:
 	# 校门两侧围墙
 	_h_line(_wall, 0, MH-120, MW/2-120, MH-120)
 	_h_line(_wall, MW/2+120, MH-120, MW, MH-120)
-	_place_door(MW/2, MH-120, "校门")
+	_place_door(MW/2, MH-120, "校门", Color(0.9, 0.7, 0.2, 0.9))
 	_add_label(MW/2-80, MH-100, "▼ 校门", Color(0.5,0.5,0.5))
 
 	# 操场区域(开阔地+树, 避开主干道)
@@ -49,15 +49,15 @@ func _build() -> void:
 	_h_line(_wall, bx+bw, by, bx+bw, by+bh)
 
 	# 正门(下墙中间)
-	_place_door(bx+bw/2, by+bh, "教学楼入口")
+	_place_door(bx+bw/2, by+bh, "教学楼入口", Color(0.3, 0.5, 1.0, 0.9))
 	_add_label(bx+bw/2-80, by+bh+16, "教学楼入口 ▲", Color(0.8,0.7,0.3))
 
 	# 玄关区域(下墙留出口通向上方走廊)
 	# 左右墙延伸形成玄关
 	_h_line(_wall, bx+400, by, bx+400, by+bh-120)  # 左隔墙
 	_h_line(_wall, bx+bw-400, by, bx+bw-400, by+bh-120)  # 右隔墙
-	_place_door(bx+400, by+bh-120, "")
-	_place_door(bx+bw-400, by+bh-120, "")
+	_place_door(bx+400, by+bh-120, "", Color(0.3, 0.5, 1.0, 0.9))
+	_place_door(bx+bw-400, by+bh-120, "", Color(0.3, 0.5, 1.0, 0.9))
 
 	_add_label(bx+bw/2-60, by+bh/2-12, "玄关", Color(0.7,0.6,0.3))
 
@@ -69,8 +69,8 @@ func _build() -> void:
 	_h_line(_wall, bx, cy+80, bx+bw, cy+80)
 
 	# 走廊两端门
-	_place_door(bx+60, cy, "")
-	_place_door(bx+bw-60, cy, "")
+	_place_door(bx+60, cy, "", Color(0.2, 0.8, 0.2, 0.9))
+	_place_door(bx+bw-60, cy, "", Color(0.2, 0.8, 0.2, 0.9))
 
 	_add_label(bx+bw/2-40, cy-12, "走廊 · 第二试炼", Color(0.8,0.6,0.2))
 
@@ -91,7 +91,7 @@ func _build() -> void:
 	_h_line(_wall, bbx+bbw, bby, bbx+bbw, bby+bbh)
 
 	# Boss间门(下方)
-	_place_door(bbx+bbw/2, bby+bbh, "Boss间")
+	_place_door(bbx+bbw/2, bby+bbh, "Boss间", Color(1.0, 0.2, 0.1, 0.9))
 
 	_add_label(bbx+bbw/2-60, bby-20, "⚠ Boss间 · 第三试炼", Color(1.0,0.2,0.1))
 
@@ -117,9 +117,12 @@ func _h_line(prefab: PackedScene, x1: float, y1: float, x2: float, y2: float) ->
 		var w := prefab.instantiate(); w.global_position = pos
 		add_child(w); pos += dir * TILE; traveled += TILE
 
-func _place_door(x: float, y: float, label: String = "") -> void:
+func _place_door(x: float, y: float, label: String = "", door_color: Color = Color(0.2, 0.8, 0.2, 0.8)) -> void:
 	var d := _door.instantiate(); d.global_position = Vector2(x, y)
 	add_child(d)
+	if d.has_node("Sprite"):
+		var sp: ColorRect = d.get_node("Sprite")
+		if sp: sp.color = door_color
 
 func _place_tree(x: float, y: float) -> void:
 	var t := _tree.instantiate()
@@ -137,7 +140,7 @@ func _room(x1: float, y1: float, x2: float, y2: float, name: String, cols: int, 
 	_h_line(_wall, x1, y2, mx-TILE, y2)
 	_h_line(_wall, mx+TILE, y2, x2, y2)
 	# 教室门(下墙中间, 2格宽)
-	_place_door(mx, y2, name)
+	_place_door(mx, y2, name, Color(0.8, 0.8, 0.1, 0.9))
 	# 课桌
 	var rw := x2-x1; var rh := y2-y1
 	for c in cols:
