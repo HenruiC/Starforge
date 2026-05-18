@@ -412,7 +412,11 @@ func _input(event: InputEvent) -> void:
 	if _is_game_over and event.is_action_pressed("move_up"):
 		get_tree().paused = false; get_tree().reload_current_scene()
 	if event is InputEventKey and event.keycode == KEY_M and event.pressed and _game_started:
-		_toggle_map()
+		var mp: Control = $"../HUDLayer/MapPanel"
+		if mp: mp.visible = true; _update_map_position()
+	if event is InputEventKey and event.keycode == KEY_ESCAPE and event.pressed:
+		var mp: Control = $"../HUDLayer/MapPanel"
+		if mp: mp.visible = false
 
 func _toggle_map() -> void:
 	var mp: Control = $"../HUDLayer/MapPanel"
