@@ -168,6 +168,7 @@ horizontal_alignment = 1
 theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1.0)
 
 [node name="CharSelect" type="Control" parent="HUDLayer"]
+z_index = 0
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -223,6 +224,7 @@ theme_override_constants/separation = 20
 alignment = 1
 
 [node name="LevelUpPanel" type="Control" parent="HUDLayer"]
+z_index = 8
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -265,6 +267,7 @@ theme_override_constants/separation = 20
 alignment = 1
 
 [node name="MapPanel" type="Control" parent="HUDLayer"]
+z_index = 5
 visible = false
 layout_mode = 1
 anchors_preset = 15
@@ -336,6 +339,7 @@ theme_override_colors/font_color = Color(0.5, 0.5, 0.5, 1.0)
 script = ExtResource("6_map_sys")
 
 [node name="DialoguePanel" parent="HUDLayer" instance=ExtResource("5_dlg")]
+z_index = 10
 
 [connection signal="timeout" from="GameManager/SpawnTimer" to="GameManager" method="_on_spawn_timer_timeout"]
 [connection signal="timeout" from="GameManager/WaveTimer" to="GameManager" method="_on_wave_timer_timeout"]

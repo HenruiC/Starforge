@@ -61,6 +61,7 @@ func _ready() -> void:
 func _show_char_select() -> void:
 	char_select_panel.visible = true
 	_is_paused = true
+	GameState.set_state(GameState.State.CHAR_SELECT)
 	$"../HUDLayer".process_mode = Node.PROCESS_MODE_ALWAYS
 
 	# 移除旧的叙事文本避免重叠

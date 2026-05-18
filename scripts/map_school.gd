@@ -128,12 +128,16 @@ func _place_tree(x: float, y: float) -> void:
 	t.global_position = Vector2(x, y); add_child(t)
 
 func _room(x1: float, y1: float, x2: float, y2: float, name: String, cols: int, rows: int) -> void:
+	# 上墙 + 两侧墙
 	_h_line(_wall, x1, y1, x2, y1)
 	_h_line(_wall, x1, y1, x1, y2)
 	_h_line(_wall, x2, y1, x2, y2)
-	_h_line(_wall, x1, y2, x2, y2)
-	# 教室门(下墙)
-	_place_door((x1+x2)/2, y2, name)
+	# 下墙留门洞: 左半段 + 门 + 右半段
+	var mx := (x1+x2)/2
+	_h_line(_wall, x1, y2, mx-TILE, y2)
+	_h_line(_wall, mx+TILE, y2, x2, y2)
+	# 教室门(下墙中间, 2格宽)
+	_place_door(mx, y2, name)
 	# 课桌
 	var rw := x2-x1; var rh := y2-y1
 	for c in cols:
