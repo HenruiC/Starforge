@@ -12,8 +12,11 @@ func init(player_ref: CharacterBody2D, hud_layer: CanvasLayer) -> void:
 	_player = player_ref
 	var mp := hud_layer.get_node("MapPanel")
 	var tr: TextureRect = mp.get_node("MapTexture")
-	if ResourceLoader.exists("res://assets/generated/map_full.jpg"):
-		tr.texture = load("res://assets/generated/map_full.jpg") as Texture
+	var path := "res://assets/generated/map_full.jpg"
+	if ResourceLoader.exists(path):
+		var img := Image.load_from_file("assets/generated/map_full.jpg")
+		if img:
+			tr.texture = ImageTexture.create_from_image(img)
 	# 初始化迷雾
 	var cw := 80.0; var cols := int(ceil(3200.0 / cw)); var rows := int(ceil(2400.0 / cw))
 	_fog_total = cols * rows
