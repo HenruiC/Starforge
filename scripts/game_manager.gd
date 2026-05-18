@@ -85,9 +85,8 @@ func _show_char_select() -> void:
 	sel_talents.clear()
 	talent_btns.clear()
 
-	# 杨奇: 留白是最高级的奢侈 — 加大区间距
 	var root := HBoxContainer.new()
-	root.add_theme_constant_override("separation", 20)
+	root.add_theme_constant_override("separation", 16)
 	root.alignment = BoxContainer.ALIGNMENT_CENTER
 	char_select_buttons.add_child(root)
 
@@ -96,20 +95,31 @@ func _show_char_select() -> void:
 	root.add_child(wp_vbox)
 	for key in SkillManager.WEAPON_POOL:
 		var d: Dictionary = SkillManager.WEAPON_POOL[key]
+		var wk: String = key
 		var b := _mk_btn(d["icon"] + " " + d["name"], d["desc"], Color(0.3, 0.5, 0.8, 1.0))
-		b.pressed.connect(func(): sel_wp = key; _refresh_preview())
+		b.pressed.connect(func(): sel_wp = wk; _refresh_preview())
 		wp_vbox.add_child(b)
-		if key == "sword": b.modulate = Color.GREEN
+		if wk == "sword": b.modulate = Color.GREEN
 
-	# 中: 天赋池
+	# 中: 天赋池 (9个技能用ScrollContainer)
 	var tp_vbox := _mk_zone("天赋 (选3)", Color(0.8, 0.6, 0.2, 1.0))
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size = Vector2(190, 280)
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	var tp_grid := GridContainer.new()
+	tp_grid.columns = 1
+	tp_grid.add_theme_constant_override("v_separation", 3)
+	scroll.add_child(tp_grid)
+	tp_vbox.add_child(scroll)
 	root.add_child(tp_vbox)
 	for key in SkillManager.TALENT_POOL:
 		var d: Dictionary = SkillManager.TALENT_POOL[key]
+		var tk: String = key
 		var b := _mk_btn(d["icon"] + " " + d["name"], d["desc"], d["color"])
-		b.pressed.connect(func(): _toggle_talent(key, b))
-		talent_btns[key] = b
-		tp_vbox.add_child(b)
+		b.custom_minimum_size = Vector2(175, 42)
+		b.pressed.connect(func(): _toggle_talent(tk, b))
+		talent_btns[tk] = b
+		tp_grid.add_child(b)
 
 	# 右: 预览
 	preview_vbox = _mk_zone("已选", Color(0.3, 0.8, 0.3, 1.0))
@@ -406,9 +416,17 @@ func _input(event: InputEvent) -> void:
 
 func _toggle_map() -> void:
 	var mp: Control = $"../HUDLayer/MapPanel"
-	mp.visible = not mp.visible
-	if mp.visible:
-		_update_map_position()
+	if mp:
+		mp.visible = not mp.visible
+		if mp.visible:
+			_update_map_position()
+
+func _get_zone_narrative(y_pos: float) -> String:
+	if y_pos > 1800: return "\"这里是起点。也是终点。\""
+	if y_pos > 1500: return "\"鞋柜里还贴着去年的运动会照片。\""
+	if y_pos > 1100: return "\"走廊的灯光忽明忽暗。有什么在尽头。\""
+	if y_pos > 700: return "\"课桌上的涂鸦是最后的留言。\""
+	return "\"体温从这里开始下降。\""
 
 func _update_map_position() -> void:
 	var content: Label = $"../HUDLayer/MapPanel/Content"
@@ -434,8 +452,8 @@ func _update_map_position() -> void:
 
 func _get_zone_name(pos: Vector2) -> String:
 	var y := pos.y
-	if y > 1800: return "操场·校门广场"
-	if y > 1500: return "教学楼·玄关"
-	if y > 1100: return "教学楼·走廊"
-	if y > 700: return "教室区域"
-	return "Boss间·最深处"
+	if y > 1800: return "操场·校门广场 — 阳光刺眼，曾经升旗的地方"
+	if y > 1500: return "教学楼·玄关 — 鞋柜东倒西歪，室内鞋散落一地"
+	if y > 1100: return "教学楼·走廊 — 墙上还贴着上学期的手抄报"
+	if y > 700: return "教室区域 — 黑板上的粉笔字写到一半..."
+	return "Boss间·最深处的体育馆 — 这里曾是全校的骄傲"
