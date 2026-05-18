@@ -41,6 +41,7 @@ var _mission_manager: Node = null
 # 选择状态
 var sel_wp: String = "sword"
 var sel_talents: Array = []
+var wp_btns: Dictionary = {}
 var talent_btns: Dictionary = {}
 var preview_vbox: VBoxContainer
 var confirm_btn: Button
@@ -83,6 +84,7 @@ func _show_char_select() -> void:
 
 	sel_wp = "sword"
 	sel_talents.clear()
+	wp_btns.clear()
 	talent_btns.clear()
 
 	var root := HBoxContainer.new()
@@ -99,7 +101,7 @@ func _show_char_select() -> void:
 		var b := _mk_btn(d["icon"] + " " + d["name"], d["desc"], Color(0.3, 0.5, 0.8, 1.0))
 		b.pressed.connect(func(): sel_wp = wk; _refresh_preview())
 		wp_vbox.add_child(b)
-		if wk == "sword": b.modulate = Color.GREEN
+		wp_btns[wk] = b
 
 	# 中: 天赋池 (9个技能用ScrollContainer)
 	var tp_vbox := _mk_zone("天赋 (选3)", Color(0.8, 0.6, 0.2, 1.0))
@@ -194,10 +196,18 @@ func _refresh_preview() -> void:
 	if preview_vbox == null: return
 	for child in preview_vbox.get_children():
 		if child is Label and child.text != "": child.queue_free()
+
+	# 更新武器按钮高亮
+	_update_weapon_highlight()
+
 	var wp: Dictionary = SkillManager.WEAPON_POOL[sel_wp]
 	var wl := Label.new(); wl.text = "武器: %s %s" % [wp["icon"], wp["name"]]
 	wl.add_theme_color_override("font_color", Color(0.5, 0.7, 1.0, 1.0))
 	preview_vbox.add_child(wl)
+
+func _update_weapon_highlight() -> void:
+	for wk in wp_btns:
+		wp_btns[wk].modulate = Color.GREEN if wk == sel_wp else Color.WHITE
 	var tl := Label.new(); tl.text = "天赋: %d/3" % sel_talents.size()
 	preview_vbox.add_child(tl)
 	for tid in sel_talents:
