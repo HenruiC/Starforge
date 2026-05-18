@@ -44,6 +44,13 @@ var _game_started: bool = false
 var _difficulty_scale: float = 1.3
 var _mission_manager: Node = null
 
+# 角色选择状态
+var _sel_wp: String = "sword"
+var _sel_talents: Array = []
+var _talent_btns: Dictionary = {}
+var _preview_vbox: VBoxContainer = null
+var _confirm_btn: Button = null
+
 func _ready() -> void:
 	add_to_group("game_manager")
 	_screen_size = get_viewport().get_visible_rect().size
@@ -87,7 +94,7 @@ func _show_char_select() -> void:
 		btn.text = "%s\n%s" % [data["name"], data["desc"]]
 		btn.custom_minimum_size = Vector2(170, 100)
 		var c: Color = data["color"]
-		btn.pressed.connect(func(): _start_with_talent(key))
+		btn.pressed.connect(func(): _try_start_fix(key))
 
 		var s := _make_button_style(c)
 		btn.add_theme_stylebox_override("normal", s)
@@ -107,12 +114,12 @@ func _make_button_style(c: Color) -> StyleBoxFlat:
 	s.corner_radius_bottom_left = 8; s.corner_radius_bottom_right = 8
 	return s
 
-func _start_with_talent(_key: String) -> void:
+func _try_start_fix(_k: String) -> void:
 	# 临时: 选3个相同的天赋+默认武器
 	char_select_panel.visible = false
 	$"../HUDLayer".process_mode = Node.PROCESS_MODE_INHERIT
 	_is_paused = false
-	player.init_skills(["slash", "aoe", "multi_shot"], "sword")
+	player.init_skills(_sel_talents, _sel_wp)
 
 func _on_game_start(_preset: String) -> void:
 	_game_started = true

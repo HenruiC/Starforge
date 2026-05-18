@@ -23,7 +23,7 @@ const WEAPON_POOL := {
 	"staff": {"name": "法杖", "icon": "🪄", "mult": 1.5, "spd": 260, "range": 140, "desc": "技能伤害+50%"},
 }
 
-func init(ply: CharacterBody2D, eff: Node2D, area: Area2D, skill_ids: Array[String]) -> void:
+func init(ply: CharacterBody2D, eff: Node2D, area: Area2D, skill_ids: Array) -> void:
 	player = ply
 	effect_parent = eff
 	attack_area = area

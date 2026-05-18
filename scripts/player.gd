@@ -50,7 +50,7 @@ func _ready() -> void:
 	(attack_shape.shape as CircleShape2D).radius = attack_range
 	_update_all_ui()
 
-func init_skills(skill_ids: Array[String], weapon_id: String) -> void:
+func init_skills(skill_ids: Array, weapon_id: String) -> void:
 	skill_manager = SkillManager.new()
 	skill_manager.init(self, get_parent() if get_parent() else self, attack_area, skill_ids)
 	add_child(skill_manager)
