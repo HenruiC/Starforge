@@ -20,6 +20,7 @@ func setup(dir: Vector2, spd: float, dmg: int) -> void:
 	rotation = dir.angle()
 
 func _physics_process(delta: float) -> void:
+	if GameState.current_state != GameState.State.PLAYING: return
 	_timer += delta
 	if _timer > lifetime:
 		queue_free()

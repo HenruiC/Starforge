@@ -66,8 +66,8 @@ func init_skills(skill_ids: Array, weapon_id: String) -> void:
 	preset_chosen.emit(weapon_id)
 
 func _physics_process(delta: float) -> void:
-	if _is_dead:
-		return
+	if _is_dead: return
+	if GameState.current_state != GameState.State.PLAYING and GameState.current_state != GameState.State.CHAR_SELECT: return
 
 	var direction := Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	velocity = direction * move_speed

@@ -327,6 +327,7 @@ func _on_level_up_available(_count: int) -> void:
 
 func _show_upgrade_panel() -> void:
 	_is_paused = true; get_tree().paused = true
+	GameState.set_state(GameState.State.PAUSED)
 	$"../HUDLayer".process_mode = Node.PROCESS_MODE_ALWAYS
 	level_up_panel.visible = true
 	for child in upgrade_buttons.get_children(): child.queue_free()
@@ -350,6 +351,7 @@ func _on_upgrade_chosen(id: String) -> void:
 	level_up_panel.visible = false
 	$"../HUDLayer".process_mode = Node.PROCESS_MODE_INHERIT
 	_is_paused = false; get_tree().paused = false
+	GameState.set_state(GameState.State.PLAYING)
 	if player._pending_level_ups > 0:
 		await get_tree().create_timer(0.2).timeout
 		_show_upgrade_panel()
