@@ -98,7 +98,7 @@ func _show_char_select() -> void:
 	for key in SkillManager.WEAPON_POOL:
 		var d: Dictionary = SkillManager.WEAPON_POOL[key]
 		var wk: String = key
-		var b := _mk_btn(d["icon"] + " " + d["name"], d["desc"], Color(0.3, 0.5, 0.8, 1.0))
+		var b := _mk_btn("weapon_" + wk, d["name"], d["desc"], Color(0.3, 0.5, 0.8, 1.0))
 		b.pressed.connect(func(): sel_wp = wk; _refresh_preview())
 		wp_vbox.add_child(b)
 		wp_btns[wk] = b
@@ -117,7 +117,7 @@ func _show_char_select() -> void:
 	for key in SkillManager.TALENT_POOL:
 		var d: Dictionary = SkillManager.TALENT_POOL[key]
 		var tk: String = key
-		var b := _mk_btn(d["icon"] + " " + d["name"], d["desc"], d["color"])
+		var b := _mk_btn("icon_" + tk, d["name"], d["desc"], d["color"])
 		b.custom_minimum_size = Vector2(175, 42)
 		b.pressed.connect(func(): _toggle_talent(tk, b))
 		talent_btns[tk] = b
@@ -155,10 +155,21 @@ func _mk_zone(title: String, color: Color) -> VBoxContainer:
 	vb.add_child(l)
 	return vb
 
-func _mk_btn(title: String, desc: String, color: Color) -> Button:
+func _load_icon(icon_name: String) -> Texture2D:
+	var path := "res://assets/generated/" + icon_name + ".jpg"
+	if ResourceLoader.exists(path): return load(path) as Texture2D
+	return null
+
+func _mk_btn(icon_key: String, title: String, desc: String, color: Color) -> Button:
 	var b := Button.new()
-	b.text = "%s\n%s" % [title, desc]
+	# icon_key = "weapon_sword" / "icon_slash" 等
+	# 尝试武器图标 → 技能图标
+	var tex := _load_icon(icon_key)
+	if tex == null: tex = _load_icon("icon_" + icon_key)
+	b.icon = tex
+	b.text = title + "\n" + desc
 	b.custom_minimum_size = Vector2(170, 55)
+	b.expand_icon = true
 	var s := _mk_style(color); b.add_theme_stylebox_override("normal", s)
 	return b
 
