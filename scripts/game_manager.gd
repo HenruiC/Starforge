@@ -63,14 +63,19 @@ func _show_char_select() -> void:
 	_is_paused = true
 	$"../HUDLayer".process_mode = Node.PROCESS_MODE_ALWAYS
 
+	# 移除旧的叙事文本避免重叠
+	var old_n := $"../HUDLayer/CharSelect".get_node_or_null("Narrative")
+	if old_n: old_n.queue_free()
+
 	var narrative := Label.new()
+	narrative.name = "Narrative"
 	narrative.text = "\"那一天，所有人都觉醒了天赋。\n而我，只有D级的——天赋适应。\""
 	narrative.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	narrative.add_theme_font_size_override("font_size", 15)
-	narrative.add_theme_color_override("font_color", Color(0.7, 0.65, 0.5, 1.0))
+	narrative.add_theme_font_size_override("font_size", 14)
+	narrative.add_theme_color_override("font_color", Color(0.65, 0.6, 0.45, 1.0))
 	narrative.anchor_left = 0.5; narrative.anchor_right = 0.5
-	narrative.offset_left = -300; narrative.offset_top = 340
-	narrative.offset_right = 300; narrative.offset_bottom = 380
+	narrative.offset_left = -300; narrative.offset_top = 350
+	narrative.offset_right = 300; narrative.offset_bottom = 395
 	$"../HUDLayer/CharSelect".add_child(narrative)
 
 	for child in char_select_buttons.get_children():
@@ -80,8 +85,9 @@ func _show_char_select() -> void:
 	sel_talents.clear()
 	talent_btns.clear()
 
+	# 杨奇: 留白是最高级的奢侈 — 加大区间距
 	var root := HBoxContainer.new()
-	root.add_theme_constant_override("separation", 12)
+	root.add_theme_constant_override("separation", 20)
 	root.alignment = BoxContainer.ALIGNMENT_CENTER
 	char_select_buttons.add_child(root)
 
@@ -110,8 +116,19 @@ func _show_char_select() -> void:
 	root.add_child(preview_vbox)
 
 	confirm_btn = Button.new()
-	confirm_btn.text = "开始试炼 (需选3天赋)"
-	confirm_btn.custom_minimum_size = Vector2(250, 45)
+	confirm_btn.text = "踏入试炼"
+	confirm_btn.custom_minimum_size = Vector2(280, 48)
+	var cs := StyleBoxFlat.new()
+	cs.bg_color = Color(0.15, 0.1, 0.02, 1.0)
+	cs.border_width_left = 2; cs.border_width_right = 2
+	cs.border_width_top = 2; cs.border_width_bottom = 2
+	cs.border_color = Color(0.8, 0.6, 0.1, 0.6)
+	cs.corner_radius_top_left = 4; cs.corner_radius_top_right = 4
+	cs.corner_radius_bottom_left = 4; cs.corner_radius_bottom_right = 4
+	cs.content_margin_left = 12; cs.content_margin_right = 12
+	confirm_btn.add_theme_stylebox_override("normal", cs)
+	confirm_btn.add_theme_color_override("font_color", Color(0.9, 0.7, 0.2, 1.0))
+	confirm_btn.add_theme_font_size_override("font_size", 16)
 	confirm_btn.pressed.connect(_try_start)
 	char_select_buttons.add_child(confirm_btn)
 	_refresh_preview()
@@ -135,20 +152,32 @@ func _mk_btn(title: String, desc: String, color: Color) -> Button:
 
 func _mk_style(c: Color) -> StyleBoxFlat:
 	var s := StyleBoxFlat.new()
-	s.bg_color = Color(0.12, 0.12, 0.2, 1.0)
-	s.border_width_left = 2; s.border_width_right = 2
-	s.border_width_top = 2; s.border_width_bottom = 2
-	s.border_color = c
-	s.corner_radius_top_left = 6; s.corner_radius_top_right = 6
-	s.corner_radius_bottom_left = 6; s.corner_radius_bottom_right = 6
+	s.bg_color = Color(0.08, 0.08, 0.16, 1.0)
+	s.border_width_left = 1; s.border_width_right = 1
+	s.border_width_top = 1; s.border_width_bottom = 1
+	s.border_color = Color(c.r, c.g, c.b, 0.3)
+	s.corner_radius_top_left = 4; s.corner_radius_top_right = 4
+	s.corner_radius_bottom_left = 4; s.corner_radius_bottom_right = 4
+	s.content_margin_left = 6; s.content_margin_right = 6
+	s.content_margin_top = 4; s.content_margin_bottom = 4
 	return s
 
 func _toggle_talent(key: String, btn: Button) -> void:
 	if key in sel_talents:
-		sel_talents.erase(key); btn.modulate = Color.WHITE
+		sel_talents.erase(key)
+		btn.modulate = Color.WHITE
+		var s := _mk_style(SkillManager.TALENT_POOL[key]["color"])
+		btn.add_theme_stylebox_override("normal", s)
 	else:
 		if sel_talents.size() >= 3: return
-		sel_talents.append(key); btn.modulate = Color.GREEN
+		sel_talents.append(key)
+		btn.modulate = Color(0.5, 1.0, 0.5, 1.0)
+		# 选中高亮边框
+		var h := _mk_style(SkillManager.TALENT_POOL[key]["color"])
+		h.border_color = Color.GREEN
+		h.border_width_left = 2; h.border_width_right = 2
+		h.border_width_top = 2; h.border_width_bottom = 2
+		btn.add_theme_stylebox_override("normal", h)
 	_refresh_preview()
 
 func _refresh_preview() -> void:
@@ -167,8 +196,13 @@ func _refresh_preview() -> void:
 		l.add_theme_color_override("font_color", td["color"])
 		preview_vbox.add_child(l)
 	if confirm_btn:
-		confirm_btn.text = "开始试炼 (%d/3天赋)" % sel_talents.size()
-		confirm_btn.disabled = sel_talents.size() != 3
+		var ready := sel_talents.size() == 3
+		confirm_btn.text = "踏入试炼" if ready else "选择天赋 (%d/3)" % sel_talents.size()
+		confirm_btn.disabled = not ready
+		if ready:
+			var cs2 := confirm_btn.get_theme_stylebox("normal", "").duplicate() as StyleBoxFlat
+			cs2.border_color = Color.GREEN
+			confirm_btn.add_theme_stylebox_override("normal", cs2)
 
 func _try_start() -> void:
 	if sel_talents.size() != 3: return
