@@ -1,145 +1,142 @@
 class_name MapSchool
 extends Node2D
 
-# 学校副本 — 天赋猎人·第一试炼
-# 设计: 宫崎英高 / 监修: 陶德·霍华德 / 氛围: 小岛秀夫
-# 参考: 黑暗之魂不死院 / 吸血鬼幸存者疯狂森林 / 全球废土(爽文)
+# 学校副本 — 线性流程: 校门→操场→玄关→走廊→教室→Boss间
+# 设计: 宫崎英高 / 监修: 陶德
 
 const TILE := 48
-const MAP_W := 3200
-const MAP_H := 2400
+const MW := 3200; const MH := 2400
 
-var _wall_prefab: PackedScene = preload("res://scenes/wall.tscn")
-var _boundary_prefab: PackedScene = preload("res://scenes/boundary.tscn")
-var _door_prefab: PackedScene = preload("res://scenes/door.tscn")
-var _desk_prefab: PackedScene = preload("res://scenes/desk.tscn")
-var _tree_prefab: PackedScene = preload("res://scenes/destructible.tscn")
+var _wall: PackedScene = preload("res://scenes/wall.tscn")
+var _boundary: PackedScene = preload("res://scenes/boundary.tscn")
+var _door: PackedScene = preload("res://scenes/door.tscn")
+var _desk: PackedScene = preload("res://scenes/desk.tscn")
+var _tree: PackedScene = preload("res://scenes/destructible.tscn")
 
 func _ready() -> void:
-	_build_school()
+	_build()
 
-func _build_school() -> void:
-	# ===== 第一层: 不可破坏边界 (宫崎设计: 世界的尽头) =====
-	_draw_boundary_rect(0, 0, MAP_W, MAP_H)
+func _build() -> void:
+	# ===== 不可破坏边界 =====
+	_rect(_boundary, 0, 0, MW, MH)
 
-	# ===== 第二层: 教学楼 (中央偏上) =====
-	var bx := 600; var by := 400
-	var bw := 2000; var bh := 1200
+	# ===== 区域1: 校门前空地 + 操场 (底部) =====
+	# 校门两侧围墙
+	_h_line(_wall, 0, MH-120, MW/2-120, MH-120)
+	_h_line(_wall, MW/2+120, MH-120, MW, MH-120)
+	_place_door(MW/2, MH-120, "校门")
+	_add_label(MW/2-80, MH-100, "▼ 校门", Color(0.5,0.5,0.5))
 
-	# 教学楼外墙 (普通墙壁, 可破坏, 150HP)
-	_draw_wall_line(bx, by, bx + bw, by)
-	_draw_wall_line(bx, by, bx, by + bh)
-	_draw_wall_line(bx, by + bh, bx + bw, by + bh)
-	_draw_wall_line(bx + bw, by, bx + bw, by + bh)
+	# 操场区域(开阔地+树)
+	for i in 8:
+		_place_tree(randf_range(400,MW-400), randf_range(MH-400,MH-160))
+	_add_label(MW/2-60, MH-300, "操场 · 第一试炼", Color(0.3,0.8,0.3))
+
+	# ===== 区域2: 教学楼玄关 (中下部) =====
+	var bx := 800; var by := MH-600; var bw := 1600; var bh := 400
+
+	# 教学楼外墙
+	_h_line(_wall, bx, by, bx+bw, by)
+	_h_line(_wall, bx, by, bx, by+bh)
+	_h_line(_wall, bx+bw, by, bx+bw, by+bh)
 
 	# 正门(下墙中间)
-	_place_door(bx + bw / 2, by + bh)
+	_place_door(bx+bw/2, by+bh, "教学楼入口")
+	_add_label(bx+bw/2-80, by+bh+16, "教学楼入口 ▲", Color(0.8,0.7,0.3))
 
-	var mid_x := bx + bw / 2
-	var mid_y := by + bh / 2
+	# 玄关区域(下墙留出口通向上方走廊)
+	# 左右墙延伸形成玄关
+	_h_line(_wall, bx+400, by, bx+400, by+bh-120)  # 左隔墙
+	_h_line(_wall, bx+bw-400, by, bx+bw-400, by+bh-120)  # 右隔墙
+	_place_door(bx+400, by+bh-120, "")
+	_place_door(bx+bw-400, by+bh-120, "")
 
-	# 内部走廊
-	_draw_wall_line(bx + 100, mid_y - 80, bx + 400, mid_y - 80)
-	_draw_wall_line(bx + 600, mid_y - 80, bx + 900, mid_y - 80)
-	_draw_wall_line(bx + 1100, mid_y - 80, bx + 1400, mid_y - 80)
-	_draw_wall_line(bx + 1600, mid_y - 80, bx + bw - 100, mid_y - 80)
-	_draw_wall_line(bx + 100, mid_y + 80, bx + 400, mid_y + 80)
-	_draw_wall_line(bx + 600, mid_y + 80, bx + 900, mid_y + 80)
-	_draw_wall_line(bx + 1100, mid_y + 80, bx + 1400, mid_y + 80)
-	_draw_wall_line(bx + 1600, mid_y + 80, bx + bw - 100, mid_y + 80)
+	_add_label(bx+bw/2-60, by+bh/2-12, "玄关", Color(0.7,0.6,0.3))
 
-	_draw_wall_line(mid_x - 80, by + 100, mid_x - 80, mid_y - 100)
-	_draw_wall_line(mid_x + 80, by + 100, mid_x + 80, mid_y - 100)
-	_draw_wall_line(mid_x - 80, mid_y + 100, mid_x - 80, by + bh - 100)
-	_draw_wall_line(mid_x + 80, mid_y + 100, mid_x + 80, by + bh - 100)
+	# ===== 区域3: 走廊 (中间) =====
+	var cy := by - 300  # 走廊Y坐标
 
-	# 教室门
-	_place_door(bx + 250, mid_y - 80)
-	_place_door(bx + 750, mid_y - 80)
-	_place_door(bx + 1250, mid_y - 80)
-	_place_door(bx + 250, mid_y + 80)
-	_place_door(bx + 750, mid_y + 80)
-	_place_door(bx + 1250, mid_y + 80)
+	# 走廊两侧墙壁
+	_h_line(_wall, bx, cy-80, bx+bw, cy-80)
+	_h_line(_wall, bx, cy+80, bx+bw, cy+80)
 
-	# ===== 第三层: 教室内课桌 =====
-	_place_desks_in_room(bx + 50, by + 50, bx + 380, mid_y - 120, 4, 3)
-	_place_desks_in_room(bx + 500, by + 50, bx + 880, mid_y - 120, 5, 3)
-	_place_desks_in_room(bx + 1000, by + 50, bx + 1380, mid_y - 120, 5, 3)
-	_place_desks_in_room(bx + 50, mid_y + 120, bx + 380, by + bh - 50, 4, 3)
-	_place_desks_in_room(bx + 500, mid_y + 120, bx + 880, by + bh - 50, 5, 3)
-	_place_desks_in_room(bx + 1000, mid_y + 120, bx + 1380, by + bh - 50, 5, 3)
+	# 走廊两端门
+	_place_door(bx+60, cy, "")
+	_place_door(bx+bw-60, cy, "")
 
-	# ===== 第四层: 操场 (陶德: 自由探索空间) =====
-	_place_trees_around(bx - 200, by + bh + 100, bw + 400, MAP_H - (by + bh) - 200, 8)
-	_place_trees_around(bx + bw + 100, by, MAP_W - (bx + bw) - 200, bh, 5)
-	_place_trees_around(100, by, bx - 200, bh, 5)
+	_add_label(bx+bw/2-40, cy-12, "走廊 · 第二试炼", Color(0.8,0.6,0.2))
 
-	# ===== 第五层: 区域标注 (宫崎: 让玩家理解空间) =====
-	_add_zone_label(bx + bw / 2, by + bh / 2, "教学楼", Color(0.8, 0.7, 0.3))
-	_add_zone_label(bx + bw / 2, by + bh + 150, "操场 · 安全区", Color(0.3, 0.8, 0.3))
-	_add_zone_label(MAP_W / 2, MAP_H - 40, "校门 · 副本入口", Color(0.5, 0.5, 0.5))
+	# ===== 区域4: 教室区 (中上部, 走廊两侧) =====
+	# 上排教室
+	_room(bx+20, cy-280, bx+500, cy-100, "教室A", 3, 2)
+	_room(bx+540, cy-280, bx+1060, cy-100, "教室B", 4, 2)
+	_room(bx+1100, cy-280, bx+bw-20, cy-100, "教室C", 3, 2)
+	# 下排教室
+	_room(bx+20, cy+100, bx+500, cy+280, "教室D", 3, 2)
+	_room(bx+540, cy+100, bx+1060, cy+280, "教室E", 4, 2)
+	_room(bx+1100, cy+100, bx+bw-20, cy+280, "教室F", 3, 2)
 
-func _draw_boundary_rect(x1: float, y1: float, x2: float, y2: float) -> void:
-	_draw_boundary_line(x1, y1, x2, y1)     # 上
-	_draw_boundary_line(x1, y1, x1, y2)     # 左
-	_draw_boundary_line(x1, y2, x2, y2)     # 下
-	_draw_boundary_line(x2, y1, x2, y2)     # 右
+	# ===== 区域5: Boss房间 (最上部) =====
+	var bbx := bx+300; var bby := cy-500; var bbw := bw-600; var bbh := 200
+	_h_line(_wall, bbx, bby, bbx+bbw, bby)
+	_h_line(_wall, bbx, bby, bbx, bby+bbh)
+	_h_line(_wall, bbx+bbw, bby, bbx+bbw, bby+bbh)
 
-func _draw_boundary_line(x1: float, y1: float, x2: float, y2: float) -> void:
-	var dist := Vector2(x2 - x1, y2 - y1).length()
-	var dir := Vector2(x2 - x1, y2 - y1).normalized()
-	var step := TILE
-	var pos := Vector2(x1, y1)
-	var traveled := 0.0
+	# Boss间门(下方)
+	_place_door(bbx+bbw/2, bby+bbh, "Boss间")
+
+	_add_label(bbx+bbw/2-60, bby-20, "⚠ Boss间 · 第三试炼", Color(1.0,0.2,0.1))
+
+	# ===== 树散布在建筑外区域 =====
+	for i in 4:
+		_place_tree(randf_range(100,bx-100), randf_range(by,by+bh))
+		_place_tree(randf_range(bx+bw+100,MW-100), randf_range(by,by+bh))
+		_place_tree(randf_range(bx,bx+bw), randf_range(by+bh+50,MH-200))
+
+
+# === 工具函数 ===
+func _rect(prefab: PackedScene, x1: float, y1: float, x2: float, y2: float) -> void:
+	_h_line(prefab, x1, y1, x2, y1)
+	_h_line(prefab, x1, y1, x1, y2)
+	_h_line(prefab, x1, y2, x2, y2)
+	_h_line(prefab, x2, y1, x2, y2)
+
+func _h_line(prefab: PackedScene, x1: float, y1: float, x2: float, y2: float) -> void:
+	var dist := Vector2(x2-x1, y2-y1).length()
+	var dir := Vector2(x2-x1, y2-y1).normalized()
+	var pos := Vector2(x1, y1); var traveled := 0.0
 	while traveled < dist:
-		var b := _boundary_prefab.instantiate()
-		b.global_position = pos
-		add_child(b)
-		pos += dir * step
-		traveled += step
+		var w := prefab.instantiate(); w.global_position = pos
+		add_child(w); pos += dir * TILE; traveled += TILE
 
-func _draw_wall_line(x1: float, y1: float, x2: float, y2: float) -> void:
-	var dist := Vector2(x2 - x1, y2 - y1).length()
-	var dir := Vector2(x2 - x1, y2 - y1).normalized()
-	var step := TILE
-	var pos := Vector2(x1, y1)
-	var traveled := 0.0
-	while traveled < dist:
-		var w := _wall_prefab.instantiate()
-		w.global_position = pos
-		add_child(w)
-		pos += dir * step
-		traveled += step
-
-func _place_door(x: float, y: float) -> void:
-	var d := _door_prefab.instantiate()
-	d.global_position = Vector2(x, y)
+func _place_door(x: float, y: float, label: String = "") -> void:
+	var d := _door.instantiate(); d.global_position = Vector2(x, y)
 	add_child(d)
 
-func _place_desks_in_room(x1: float, y1: float, x2: float, y2: float, cols: int, rows: int) -> void:
-	var rw := x2 - x1; var rh := y2 - y1
-	var spacing_x := rw / float(cols + 1)
-	var spacing_y := rh / float(rows + 1)
+func _place_tree(x: float, y: float) -> void:
+	var t := _tree.instantiate()
+	t.object_name = "树"; t.max_health = 20; t.drop_xp = 15
+	t.object_color = Color(0.15,0.55,0.15,1.0)
+	t.global_position = Vector2(x, y); add_child(t)
+
+func _room(x1: float, y1: float, x2: float, y2: float, name: String, cols: int, rows: int) -> void:
+	_h_line(_wall, x1, y1, x2, y1)
+	_h_line(_wall, x1, y1, x1, y2)
+	_h_line(_wall, x2, y1, x2, y2)
+	_h_line(_wall, x1, y2, x2, y2)
+	# 教室门(下墙)
+	_place_door((x1+x2)/2, y2, name)
+	# 课桌
+	var rw := x2-x1; var rh := y2-y1
 	for c in cols:
 		for r in rows:
-			var d := _desk_prefab.instantiate()
-			d.global_position = Vector2(x1 + spacing_x * float(c + 1), y1 + spacing_y * float(r + 1))
+			var d := _desk.instantiate()
+			d.global_position = Vector2(x1+rw/float(cols+1)*float(c+1), y1+rh/float(rows+1)*float(r+1))
 			add_child(d)
 
-func _place_trees_around(x: float, y: float, w: float, h: float, count: int) -> void:
-	for i in count:
-		var t := _tree_prefab.instantiate()
-		t.object_name = "树"; t.max_health = 20; t.drop_xp = 15
-		t.object_color = Color(0.15, 0.55, 0.15, 1.0)
-		t.global_position = Vector2(randf_range(x, x + w), randf_range(y, y + h))
-		add_child(t)
-
-func _add_zone_label(x: float, y: float, text: String, color: Color) -> void:
-	var label := Label.new()
-	label.text = text
-	label.add_theme_font_size_override("font_size", 18)
-	label.add_theme_color_override("font_color", color)
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.position = Vector2(x - 120, y - 12)
-	label.size = Vector2(240, 24)
-	add_child(label)
+func _add_label(x: float, y: float, text: String, color: Color) -> void:
+	var l := Label.new(); l.text = text
+	l.add_theme_font_size_override("font_size", 14)
+	l.add_theme_color_override("font_color", color)
+	l.position = Vector2(x, y); l.size = Vector2(200, 20)
+	add_child(l)
