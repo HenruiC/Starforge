@@ -1,10 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://main001"]
+[gd_scene load_steps=9 format=3 uid="uid://main001"]
 
 [ext_resource type="Script" path="res://scripts/game_manager.gd" id="1_gm"]
 [ext_resource type="Script" path="res://scripts/camera_controller.gd" id="2_cam"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
 [ext_resource type="Script" path="res://scripts/map_school.gd" id="4_map"]
 [ext_resource type="PackedScene" path="res://scenes/dialogue_panel.tscn" id="5_dlg"]
+[ext_resource type="Script" path="res://scripts/map_system.gd" id="6_map_sys"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_kill"]
 font_size = 22
@@ -287,24 +288,52 @@ horizontal_alignment = 1
 theme_override_font_sizes/font_size = 24
 theme_override_colors/font_color = Color(0.9, 0.7, 0.2, 1.0)
 
-[node name="Content" type="Label" parent="HUDLayer/MapPanel"]
+[node name="MapTexture" type="TextureRect" parent="HUDLayer/MapPanel"]
 layout_mode = 1
 anchor_left = 0.5; anchor_right = 0.5
-offset_left = -350; offset_top = 80
-offset_right = 350; offset_bottom = 500
-text = "┌─────────────────────────────┐\n│  ⚠ Boss间 — 第三试炼      │\n│  ┌────┬────┬────┬────┬──┐  │\n│  │教A │教B │走廊│教C │教D│  │\n│  │🪑🪑 │🪑🪑🪑│ 🚪 │🪑🪑 │🪑🪑│  │\n│  ├────┴────┼────┴────┴──┤  │\n│  │  玄关   │   走廊     │  │\n│  │   🚪   │   🚪      │  │\n│  ├─────────┴───────────┤  │\n│  │                     │  │\n│  │     操场            │  │\n│  │   🌳  🌳   🌳      │  │\n│  │        🌳          │  │\n│  │      🚪校门         │  │\n│  └─────────────────────┘  │\n│  ▼ 当前位置: 校门广场     │\n└─────────────────────────────┘"
+offset_left = -400; offset_top = 80
+offset_right = 400; offset_bottom = 480
+expand_mode = 1
+stretch_mode = 5
+
+[node name="FogOverlay" type="ColorRect" parent="HUDLayer/MapPanel"]
+layout_mode = 1
+anchor_left = 0.5; anchor_right = 0.5
+offset_left = -400; offset_top = 80
+offset_right = 400; offset_bottom = 480
+color = Color(0.05, 0.05, 0.08, 0.9)
+
+[node name="PlayerMarker" type="Label" parent="HUDLayer/MapPanel"]
+layout_mode = 1
+anchor_left = 0.5; anchor_right = 0.5
+offset_left = -10; offset_top = 80
+offset_right = 10; offset_bottom = 110
+text = "●"
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 13
-theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1.0)
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(1.0, 0.3, 0.2, 1.0)
+
+[node name="ZoneLabel" type="Label" parent="HUDLayer/MapPanel"]
+layout_mode = 1
+anchor_left = 0.5; anchor_right = 0.5
+offset_left = -350; offset_top = 490
+offset_right = 350; offset_bottom = 520
+text = "当前位置: ---"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.9, 0.7, 0.2, 1.0)
 
 [node name="Hint" type="Label" parent="HUDLayer/MapPanel"]
 layout_mode = 1
 anchor_left = 0.5; anchor_right = 0.5
-offset_left = -100; offset_top = 520
-offset_right = 100; offset_bottom = 545
-text = "[ M 打开 | ESC 关闭 ]"
+offset_left = -200; offset_top = 530
+offset_right = 200; offset_bottom = 555
+text = "[ M 打开 | ESC 关闭 ]  已探索: 0%"
 horizontal_alignment = 1
 theme_override_colors/font_color = Color(0.5, 0.5, 0.5, 1.0)
+
+[node name="MapSystem" type="Node" parent="HUDLayer"]
+script = ExtResource("6_map_sys")
 
 [node name="DialoguePanel" parent="HUDLayer" instance=ExtResource("5_dlg")]
 

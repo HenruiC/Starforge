@@ -37,8 +37,6 @@ var _screen_size: Vector2
 var _game_started: bool = false
 var _difficulty_scale: float = 1.3
 var _mission_manager: Node = null
-
-# 选择状态
 var sel_wp: String = "sword"
 var sel_talents: Array = []
 var wp_btns: Dictionary = {}
@@ -232,6 +230,7 @@ func _try_start() -> void:
 	player.init_skills(sel_talents.duplicate(), sel_wp)
 
 func _on_game_start(_preset: String) -> void:
+	var ms: Node = $"../HUDLayer/MapSystem"; if ms and ms.has_method("init"): ms.init(player, $"../HUDLayer")
 	_game_started = true
 	_mission_manager = _MissionManagerScript.new()
 	_mission_manager.init()
@@ -239,6 +238,8 @@ func _on_game_start(_preset: String) -> void:
 	_mission_manager.boss_spawned.connect(_on_boss_spawn)
 	add_child(_mission_manager)
 	_update_mission_hud()
+	
+
 	spawn_timer.wait_time = base_spawn_interval; spawn_timer.start()
 	wave_timer.wait_time = wave_duration; wave_timer.start()
 	_update_ui()
@@ -250,6 +251,7 @@ func _process(delta: float) -> void:
 	if _mission_manager:
 		_mission_manager.notify_timer(delta)
 		_update_mission_hud()
+
 
 func _on_spawn_timer_timeout() -> void:
 	if _is_game_over or not _game_started: return
@@ -305,6 +307,7 @@ func _on_enemy_killed(_pos: Vector2, score: int) -> void:
 			player.gain_exp(15 if score == 1 else (40 if score == 5 else score * 8))
 		if _mission_manager: _mission_manager.notify_kill()
 	_update_ui(); _update_mission_hud()
+
 
 func _on_player_died() -> void:
 	_is_game_over = true; spawn_timer.stop(); wave_timer.stop()
@@ -403,6 +406,7 @@ func _update_ui() -> void:
 	wave_label.text = "波次 %d" % _current_wave
 
 func _update_mission_hud() -> void:
+
 	if _mission_manager == null: return
 	mission_title_label.text = _mission_manager.get_title()
 	var lines: String = ""
@@ -427,7 +431,7 @@ func _input(event: InputEvent) -> void:
 			var mp: Control = $"../HUDLayer/MapPanel"
 			if mp:
 				mp.visible = (GameState.current_state == GameState.State.MAP)
-				if mp.visible: _update_map_position()
+				if mp.visible: _update_map_from_system()
 		elif event.keycode == KEY_ESCAPE:
 			if GameState.current_state == GameState.State.MAP:
 				GameState.set_state(GameState.State.PLAYING)
@@ -438,7 +442,7 @@ func _toggle_map() -> void:
 	if mp:
 		mp.visible = not mp.visible
 		if mp.visible:
-			_update_map_position()
+			_update_map_from_system()
 
 func _get_zone_narrative(y_pos: float) -> String:
 	if y_pos > 1800: return "\"这里是起点。也是终点。\""
@@ -447,27 +451,13 @@ func _get_zone_narrative(y_pos: float) -> String:
 	if y_pos > 700: return "\"课桌上的涂鸦是最后的留言。\""
 	return "\"体温从这里开始下降。\""
 
-func _update_map_position() -> void:
-	var content: Label = $"../HUDLayer/MapPanel/Content"
-	if not player: return
-	var px := int(player.global_position.x / 32)
-	var py := int(player.global_position.y / 24)
-	var zone := _get_zone_name(player.global_position)
-	var map_text := "┌─────────────────────────────┐\n"
-	map_text += "│  ⚠ Boss间 — 第三试炼      │\n"
-	map_text += "│  ┌────┬────┬────┬────┬──┐  │\n"
-	map_text += "│  │教A │教B │走廊│教C │教D│  │\n"
-	map_text += "│  ├────┴────┼────┴────┴──┤  │\n"
-	map_text += "│  │  玄关   │   走廊     │  │\n"
-	map_text += "│  ├─────────┴───────────┤  │\n"
-	map_text += "│  │       操场           │  │\n"
-	map_text += "│  │    🌳  ●  🌳        │  │\n"
-	map_text += "│  │      校门            │  │\n"
-	map_text += "│  └──────────────────────┘  │\n"
-	map_text += "│  当前位置: %s              │\n" % zone
-	map_text += "│  坐标: (%d, %d)            │\n" % [px, py]
-	map_text += "└─────────────────────────────┘"
-	content.text = map_text
+func _init_map_tex() -> void:
+	var ms: Node = $"../HUDLayer/MapSystem"
+	if ms and ms.has_method("init"): ms.init(player, $"../HUDLayer")
+
+func _update_map_from_system() -> void:
+	var ms: Node = $"../HUDLayer/MapSystem"
+	if ms and ms.has_method("update"): ms.update()
 
 func _get_zone_name(pos: Vector2) -> String:
 	var y := pos.y
