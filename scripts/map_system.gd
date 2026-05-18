@@ -51,9 +51,9 @@ func update() -> void:
 	if _fog_total > 0:
 		pct = float(_fog_seen) / float(_fog_total) * 100.0
 	mp.get_node("Hint").text = "[ M 打开 | ESC 关闭 ]  已探索: %.0f%%" % pct
-	_draw_fog(mp.get_node("FogOverlay") as ColorRect)
+	_draw_fog(mp.get_node("FogOverlay") as TextureRect)
 
-func _draw_fog(fog: ColorRect) -> void:
+func _draw_fog(fog: TextureRect) -> void:
 	if _fog_grid.size() == 0:
 		return
 	var cols: int = _fog_grid.size()

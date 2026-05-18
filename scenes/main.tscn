@@ -35,7 +35,7 @@ wait_time = 30.0
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1334731866]
 position = Vector2(640, 360)
-zoom = Vector2(1.2, 1.2)
+zoom = Vector2(0.7, 0.7)
 script = ExtResource("2_cam")
 
 [node name="NavManager" type="Node2D" parent="." unique_id=1822902892]
@@ -306,7 +306,7 @@ texture = ExtResource("6_tipki")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="FogOverlay" type="ColorRect" parent="HUDLayer/MapPanel" unique_id=1999311793]
+[node name="FogOverlay" type="TextureRect" parent="HUDLayer/MapPanel" unique_id=1999311793]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
