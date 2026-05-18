@@ -50,26 +50,20 @@ func _ready() -> void:
 	(attack_shape.shape as CircleShape2D).radius = attack_range
 	_update_all_ui()
 
-func init_skills(preset: String) -> void:
+func init_skills(skill_ids: Array[String], weapon_id: String) -> void:
 	skill_manager = SkillManager.new()
-	skill_manager.init(self, get_parent() if get_parent() else self, attack_area, preset)
+	skill_manager.init(self, get_parent() if get_parent() else self, attack_area, skill_ids)
 	add_child(skill_manager)
 
-	# 职业武器差异化
-	match preset:
-		"swordsman":
-			weapon_type = "sword"; weapon_multiplier = 1.2; move_speed = 280
-			attack_range = 130; defense += 2
-		"archer":
-			weapon_type = "bow"; weapon_multiplier = 0.9; move_speed = 340
-			attack_range = 170; attack_power += 5
-		"mage":
-			weapon_type = "staff"; weapon_multiplier = 1.5; move_speed = 260
-			attack_range = 140; attack_power -= 3
+	var wp: Dictionary = SkillManager.WEAPON_POOL.get(weapon_id, SkillManager.WEAPON_POOL["sword"])
+	weapon_type = weapon_id
+	weapon_multiplier = wp["mult"]
+	move_speed = wp["spd"]
+	attack_range = wp["range"]
 	(attack_shape.shape as CircleShape2D).radius = attack_range
 
 	_update_skill_icons()
-	preset_chosen.emit(preset)
+	preset_chosen.emit(weapon_id)
 
 func _physics_process(delta: float) -> void:
 	if _is_dead:

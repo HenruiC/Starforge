@@ -6,35 +6,29 @@ var effect_parent: Node2D = null
 var attack_area: Area2D = null
 var skills: Array[SkillBase] = []
 
-# 预设配置
-const PRESETS := {
-	"swordsman": {
-		"name": "剑士",
-		"desc": "近战专精，旋风斩清场",
-		"color": Color(0.3, 0.6, 1.0),
-		"skills": ["slash", "aoe", "whirlwind"]
-	},
-	"archer": {
-		"name": "射手",
-		"desc": "远程狙击，多重弹幕",
-		"color": Color(0.2, 0.8, 0.4),
-		"skills": ["slash", "multi_shot", "snipe"]
-	},
-	"mage": {
-		"name": "法师",
-		"desc": "元素掌控，连锁闪电",
-		"color": Color(0.7, 0.3, 1.0),
-		"skills": ["slash", "aoe", "chain_lightning"]
-	}
+# 天赋池 (自由选择3个)
+const TALENT_POOL := {
+	"slash": {"name": "斩击", "icon": "⚔", "desc": "自动近战斩击", "color": Color(0.9, 0.6, 0.2)},
+	"aoe": {"name": "范围爆发", "icon": "💥", "desc": "周期性冲击波", "color": Color(1.0, 0.5, 0.1)},
+	"multi_shot": {"name": "多重投射", "icon": "✨", "desc": "扇形弹幕射击", "color": Color(0.2, 0.8, 0.4)},
+	"chain_lightning": {"name": "连锁闪电", "icon": "⚡", "desc": "弹跳闪电链", "color": Color(0.3, 0.5, 1.0)},
+	"whirlwind": {"name": "旋风斩", "icon": "🌀", "desc": "持续旋转切割", "color": Color(0.5, 0.7, 1.0)},
+	"snipe": {"name": "狙击", "icon": "🎯", "desc": "超远程高伤弹", "color": Color(1.0, 0.3, 0.1)},
 }
 
-func init(ply: CharacterBody2D, eff: Node2D, area: Area2D, preset: String) -> void:
+# 武器池 (自由选择1个)
+const WEAPON_POOL := {
+	"sword": {"name": "长剑", "icon": "🗡", "mult": 1.2, "spd": 280, "range": 130, "desc": "伤害+20%, 防御+2"},
+	"bow": {"name": "弓", "icon": "🏹", "mult": 0.9, "spd": 340, "range": 170, "desc": "高移速, 超远射程"},
+	"staff": {"name": "法杖", "icon": "🪄", "mult": 1.5, "spd": 260, "range": 140, "desc": "技能伤害+50%"},
+}
+
+func init(ply: CharacterBody2D, eff: Node2D, area: Area2D, skill_ids: Array[String]) -> void:
 	player = ply
 	effect_parent = eff
 	attack_area = area
 
-	var preset_data: Dictionary = PRESETS.get(preset, PRESETS["swordsman"])
-	for skill_id in preset_data["skills"]:
+	for skill_id in skill_ids:
 		var skill := _create_skill(skill_id)
 		if skill:
 			add_skill(skill)

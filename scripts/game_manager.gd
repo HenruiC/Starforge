@@ -80,14 +80,14 @@ func _show_char_select() -> void:
 	for child in char_select_buttons.get_children():
 		child.queue_free()
 
-	var presets := SkillManager.PRESETS
-	for key in presets:
-		var data: Dictionary = presets[key]
+	var talent_pool := SkillManager.TALENT_POOL
+	for key in talent_pool:
+		var data: Dictionary = talent_pool[key]
 		var btn := Button.new()
 		btn.text = "%s\n%s" % [data["name"], data["desc"]]
 		btn.custom_minimum_size = Vector2(170, 100)
 		var c: Color = data["color"]
-		btn.pressed.connect(func(): _on_preset_selected(key))
+		btn.pressed.connect(func(): _start_with_talent(key))
 
 		var s := _make_button_style(c)
 		btn.add_theme_stylebox_override("normal", s)
@@ -107,11 +107,12 @@ func _make_button_style(c: Color) -> StyleBoxFlat:
 	s.corner_radius_bottom_left = 8; s.corner_radius_bottom_right = 8
 	return s
 
-func _on_preset_selected(preset: String) -> void:
+func _start_with_talent(_key: String) -> void:
+	# 临时: 选3个相同的天赋+默认武器
 	char_select_panel.visible = false
 	$"../HUDLayer".process_mode = Node.PROCESS_MODE_INHERIT
 	_is_paused = false
-	player.init_skills(preset)
+	player.init_skills(["slash", "aoe", "multi_shot"], "sword")
 
 func _on_game_start(_preset: String) -> void:
 	_game_started = true
@@ -311,3 +312,8 @@ func _input(event: InputEvent) -> void:
 	if _is_game_over and event.is_action_pressed("move_up"):
 		get_tree().paused = false
 		get_tree().reload_current_scene()
+
+	# M键地图
+	if event is InputEventKey and event.keycode == KEY_M and event.pressed and _game_started:
+		var map_panel: Control = $"../HUDLayer/MapPanel"
+		map_panel.visible = not map_panel.visible
