@@ -7,12 +7,10 @@ extends SkillBase
 var _projectile_scene: PackedScene = preload("res://scenes/player_projectile.tscn")
 
 func can_execute() -> bool:
-	return _find_nearest_enemy() != null
+	return player != null
 
 func execute() -> void:
-	var target := _find_nearest_enemy()
-	if target == null: return
-	var dir := player.global_position.direction_to(target.global_position)
+	var dir: Vector2 = player.get("_aim_direction") if "_aim_direction" in player else Vector2.RIGHT
 	var p := _projectile_scene.instantiate()
 	p.setup(dir, projectile_speed, damage)
 	p.global_position = player.global_position

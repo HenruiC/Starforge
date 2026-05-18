@@ -41,6 +41,7 @@ var _pending_level_ups: int = 0
 var _health: int
 var _contact_timer: float = 0.0
 var _is_dead: bool = false
+var _aim_direction: Vector2 = Vector2.RIGHT
 
 signal level_up_available(count: int)
 signal preset_chosen(preset: String)
@@ -69,9 +70,13 @@ func _physics_process(delta: float) -> void:
 	if _is_dead: return
 	if GameState.current_state != GameState.State.PLAYING and GameState.current_state != GameState.State.CHAR_SELECT: return
 
+	# 移动(WASD)
 	var direction := Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	velocity = direction * move_speed
 	move_and_slide()
+
+	# 更新攻击方向(鼠标)
+	_aim_direction = (get_global_mouse_position() - global_position).normalized()
 
 	# 接触伤害
 	_contact_timer += delta

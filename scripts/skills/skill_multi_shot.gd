@@ -8,9 +8,8 @@ extends SkillBase
 var _projectile_scene: PackedScene = preload("res://scenes/player_projectile.tscn")
 
 func execute() -> void:
-	var nearest := _find_nearest_enemy()
-	if nearest == null: return
-	var base_angle := player.global_position.direction_to(nearest.global_position).angle()
+	var aim_dir: Vector2 = player.get("_aim_direction") if "_aim_direction" in player else Vector2.RIGHT
+	var base_angle := aim_dir.angle()
 	var spread := deg_to_rad(spread_angle)
 	for i in projectile_count:
 		var offset: float = 0.0
