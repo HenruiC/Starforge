@@ -218,4 +218,3 @@ func _evolve_skill(s: SkillBase) -> void:
 					(s as SkillSnipe).aoe_on_hit *= 2.0
 					s.skill_name = "弑神之箭"
 					s.description = "一击入魂，毁天灭地"
-
