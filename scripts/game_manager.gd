@@ -45,11 +45,11 @@ var _difficulty_scale: float = 1.3
 var _mission_manager: Node = null
 
 # 角色选择状态
-var _sel_wp: String = "sword"
-var _sel_talents: Array = []
-var _talent_btns: Dictionary = {}
-var _preview_vbox: VBoxContainer = null
-var _confirm_btn: Button = null
+var sel_wp: String = "sword"
+var sel_talents: Array = []
+var talent_btns: Dictionary = {}
+var preview_vbox: VBoxContainer
+var confirm_btn: Button
 
 func _ready() -> void:
 	add_to_group("game_manager")
@@ -119,7 +119,7 @@ func _try_start_fix(_k: String) -> void:
 	char_select_panel.visible = false
 	$"../HUDLayer".process_mode = Node.PROCESS_MODE_INHERIT
 	_is_paused = false
-	player.init_skills(_sel_talents, _sel_wp)
+	player.init_skills(sel_talents, sel_wp)
 
 func _on_game_start(_preset: String) -> void:
 	_game_started = true
@@ -160,7 +160,7 @@ func _on_spawn_timer_timeout() -> void:
 		_spawn_enemy(i == 0 and is_elite_wave)
 
 	if _current_wave >= 2:
-		for i in max(int(_current_wave / 3), 1):
+		for i in max(int(float(_current_wave) / 3.0), 1):
 			_spawn_ranged_enemy()
 
 func _spawn_enemy(as_elite: bool = false) -> void:
@@ -277,7 +277,7 @@ func _update_ui() -> void:
 	kill_label.text = "击杀: %d" % _kill_count
 	wave_label.text = "波次 %d" % _current_wave
 
-func _on_stage_cleared(stage: int) -> void:
+func _on_stage_cleared(_stage: int) -> void:
 	# 阶段完成奖励
 	CombatFeedback.screen_shake(8.0)
 	CombatFeedback.big_hit_stop()
