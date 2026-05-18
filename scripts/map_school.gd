@@ -27,9 +27,17 @@ func _build() -> void:
 	_place_door(MW/2, MH-120, "校门")
 	_add_label(MW/2-80, MH-100, "▼ 校门", Color(0.5,0.5,0.5))
 
-	# 操场区域(开阔地+树)
+	# 操场区域(开阔地+树, 避开主干道)
+	# 主干道: 校门→教学楼入口 (MW/2, MH-120 → bx+bw/2, by+bh)
 	for i in 8:
-		_place_tree(randf_range(400,MW-400), randf_range(MH-400,MH-160))
+		var tx: float; var ty: float
+		while true:
+			tx = randf_range(400, MW-400)
+			ty = randf_range(MH-400, MH-160)
+			# 不挡在主干道(校门到教学楼入口)
+			if abs(tx - MW/2) < 120 and ty > MH-300: continue
+			break
+		_place_tree(tx, ty)
 	_add_label(MW/2-60, MH-300, "操场 · 第一试炼", Color(0.3,0.8,0.3))
 
 	# ===== 区域2: 教学楼玄关 (中下部) =====

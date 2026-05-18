@@ -81,8 +81,8 @@ func _setup_boss() -> void:
 	t.tween_property(glow, "modulate:a", 0.35, 0.5)
 
 func _physics_process(delta: float) -> void:
-	if is_dead or _player_ref == null:
-		return
+	if is_dead or _player_ref == null: return
+	if GameState.current_state != GameState.State.PLAYING: return
 
 	if is_ranged:
 		_ranged_behavior(delta)

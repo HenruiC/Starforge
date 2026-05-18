@@ -421,12 +421,17 @@ func _update_mission_hud() -> void:
 func _input(event: InputEvent) -> void:
 	if _is_game_over and event.is_action_pressed("move_up"):
 		get_tree().paused = false; get_tree().reload_current_scene()
-	if event is InputEventKey and event.keycode == KEY_M and event.pressed and _game_started:
-		var mp: Control = $"../HUDLayer/MapPanel"
-		if mp: mp.visible = true; _update_map_position()
-	if event is InputEventKey and event.keycode == KEY_ESCAPE and event.pressed:
-		var mp: Control = $"../HUDLayer/MapPanel"
-		if mp: mp.visible = false
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_M and _game_started:
+			GameState.toggle_map()
+			var mp: Control = $"../HUDLayer/MapPanel"
+			if mp:
+				mp.visible = (GameState.current_state == GameState.State.MAP)
+				if mp.visible: _update_map_position()
+		elif event.keycode == KEY_ESCAPE:
+			if GameState.current_state == GameState.State.MAP:
+				GameState.set_state(GameState.State.PLAYING)
+				$"../HUDLayer/MapPanel".visible = false
 
 func _toggle_map() -> void:
 	var mp: Control = $"../HUDLayer/MapPanel"
