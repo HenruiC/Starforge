@@ -14,6 +14,9 @@ const TALENT_POOL := {
 	"chain_lightning": {"name": "连锁闪电", "icon": "⚡", "desc": "弹跳闪电链", "color": Color(0.3, 0.5, 1.0)},
 	"whirlwind": {"name": "旋风斩", "icon": "🌀", "desc": "持续旋转切割", "color": Color(0.5, 0.7, 1.0)},
 	"snipe": {"name": "狙击", "icon": "🎯", "desc": "超远程高伤弹", "color": Color(1.0, 0.3, 0.1)},
+	"ice_nova": {"name": "冰霜新星", "icon": "❄", "desc": "冻结+伤害", "color": Color(0.3, 0.7, 1.0)},
+	"fire_trail": {"name": "火焰路径", "icon": "🔥", "desc": "脚下火焰灼烧", "color": Color(1.0, 0.4, 0.05)},
+	"shadow_clone": {"name": "暗影分身", "icon": "👥", "desc": "分身+爆炸", "color": Color(0.6, 0.2, 0.8)},
 }
 
 # 武器池 (自由选择1个)
@@ -64,6 +67,21 @@ func _create_skill(id: String) -> SkillBase:
 			var s := SkillSnipe.new()
 			s.skill_id = "snipe"; s.skill_name = "狙击"; s.icon = "🎯"
 			s.cooldown = 3.0; s.damage = 40; s.projectile_speed = 700.0; s.description = "超远距离高伤害狙击弹"
+			return s
+		"ice_nova":
+			var s := SkillIceNova.new()
+			s.skill_id = "ice_nova"; s.skill_name = "冰霜新星"; s.icon = "❄"
+			s.cooldown = 5.0; s.damage = 15; s.freeze_duration = 2.0; s.description = "冰冻周围敌人2秒"
+			return s
+		"fire_trail":
+			var s := SkillFireTrail.new()
+			s.skill_id = "fire_trail"; s.skill_name = "火焰路径"; s.icon = "🔥"
+			s.cooldown = 0.0; s.damage = 0; s.burn_damage = 5; s.description = "移动留下火焰灼烧敌人"
+			return s
+		"shadow_clone":
+			var s := SkillShadowClone.new()
+			s.skill_id = "shadow_clone"; s.skill_name = "暗影分身"; s.icon = "👥"
+			s.cooldown = 8.0; s.damage = 0; s.clone_duration = 3.0; s.explode_damage = 30; s.description = "分身吸引敌人+爆炸"
 			return s
 	return null
 
