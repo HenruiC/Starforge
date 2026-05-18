@@ -7,7 +7,7 @@
 [ext_resource type="Script" uid="uid://dcsuye3vugdpw" path="res://scripts/map_system.gd" id="6_map_sys"]
 [ext_resource type="Texture2D" uid="uid://dler16bj3uiwf" path="res://assets/generated/map_full.jpg" id="6_tipki"]
 [ext_resource type="Script" uid="uid://btbnb5lffr381" path="res://scripts/nav_manager.gd" id="7_nav"]
-[ext_resource type="Script" uid="uid://d77uuptqd0gv" path="res://scripts/tilemap_builder.gd" id="8_tb"]
+[ext_resource type="Script" uid="uid://d77uuptqd0gv" path="res://scripts/school_map.gd" id="8_sm"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_kill"]
 font_size = 22
@@ -41,9 +41,9 @@ script = ExtResource("2_cam")
 [node name="NavManager" type="Node2D" parent="." unique_id=1822902892]
 script = ExtResource("7_nav")
 
-[node name="TilemapBuilder" type="Node2D" parent="." unique_id=1487415849]
+[node name="SchoolMap" type="Node2D" parent="." unique_id=1487415849]
 z_index = -1
-script = ExtResource("8_tb")
+script = ExtResource("8_sm")
 
 [node name="Background" type="ColorRect" parent="." unique_id=1688606201]
 z_index = -1
