@@ -294,18 +294,10 @@ func _spawn_ranged_enemy() -> void:
 	enemies.add_child(e)
 
 func _random_spawn_position() -> Vector2:
-	# 在玩家周围500-700像素的开放区域生成(避开墙壁)
 	var center := player.global_position if player else Vector2(1600,1200)
-	for attempt in 20:
-		var angle := randf_range(0, TAU)
-		var dist := randf_range(500, 750)
-		var pos := center + Vector2(cos(angle)*dist, sin(angle)*dist)
-		# 边界检查
-		if pos.x<100 or pos.x>3100 or pos.y<100 or pos.y>2300: continue
-		# 不在教学楼墙内(教学楼: bx=6T~bx+bw=60T→288~2880, by~by+bh)
-		var bx:=6.0*48.0;var by:=2400.0-18.0*48.0;var bw:=54.0*48.0;var bh:=13.0*48.0
-		if pos.x>bx and pos.x<bx+bw and pos.y>by and pos.y<by+bh:continue
-		return pos
+	var nav: Node = get_node_or_null("../NavManager")
+	if nav and nav.has_method("get_random_nav_point"):
+		return nav.get_random_nav_point(center)
 	return center + Vector2(randf_range(-600,600), randf_range(-600,600))
 
 func _on_enemy_killed(_pos: Vector2, score: int) -> void:
