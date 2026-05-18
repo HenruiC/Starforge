@@ -45,6 +45,7 @@ var preview_vbox: VBoxContainer
 var confirm_btn: Button
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS  # 暂停时仍能接收M键/ESC
 	add_to_group("game_manager")
 	_screen_size = get_viewport().get_visible_rect().size
 	game_over_panel.visible = false
