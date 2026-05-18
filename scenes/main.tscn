@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://main001"]
+[gd_scene load_steps=8 format=3 uid="uid://main001"]
 
 [ext_resource type="Script" path="res://scripts/game_manager.gd" id="1_gm"]
 [ext_resource type="Script" path="res://scripts/camera_controller.gd" id="2_cam"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
 [ext_resource type="Script" path="res://scripts/map_school.gd" id="4_map"]
+[ext_resource type="PackedScene" path="res://scenes/dialogue_panel.tscn" id="5_dlg"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_kill"]
 font_size = 22
@@ -304,6 +305,8 @@ offset_right = 100; offset_bottom = 545
 text = "[ 按 M 关闭地图 ]"
 horizontal_alignment = 1
 theme_override_colors/font_color = Color(0.5, 0.5, 0.5, 1.0)
+
+[node name="DialoguePanel" parent="HUDLayer" instance=ExtResource("5_dlg")]
 
 [connection signal="timeout" from="GameManager/SpawnTimer" to="GameManager" method="_on_spawn_timer_timeout"]
 [connection signal="timeout" from="GameManager/WaveTimer" to="GameManager" method="_on_wave_timer_timeout"]

@@ -331,8 +331,43 @@ func _on_upgrade_chosen(id: String) -> void:
 
 func _on_stage_cleared(_stage: int) -> void:
 	CombatFeedback.screen_shake(8.0); CombatFeedback.big_hit_stop()
+	_trigger_stage_dialogue(_stage)
+
+func _trigger_stage_dialogue(stage: int) -> void:
+	var dlg: Control = $"../HUDLayer/DialoguePanel"
+	var msgs: Array[Dictionary] = []
+	match stage:
+		1:
+			msgs = [
+				{"speaker": "主角", "text": "30秒...我活下来了。这些怪物从哪来的？"},
+				{"speaker": "系统", "text": "【天赋适应】已激活。检测到可用天赋槽位。"},
+			]
+		2:
+			msgs = [
+				{"speaker": "主角", "text": "教室里还有课桌...学生们去哪了？"},
+				{"speaker": "系统", "text": "任务更新: 清理教室。每张课桌都是一段记忆。"},
+			]
+		_:
+			return
+	if dlg and dlg.has_method("show_dialogue"):
+		get_tree().paused = true
+		dlg.show_dialogue(msgs)
+		await dlg.dialogue_finished
+		get_tree().paused = false
 
 func _on_boss_spawn(_boss_name: String) -> void:
+	# 陶德: Boss出场叙事
+	var dlg: Control = $"../HUDLayer/DialoguePanel"
+	var msgs: Array[Dictionary] = [
+		{"speaker": "主角", "text": "地面在震动...那是什么东西？！"},
+		{"speaker": "???", "text": "一个巨大的变异体堵在操场中央。它曾经是这里的体育老师。"},
+	]
+	if dlg and dlg.has_method("show_dialogue"):
+		get_tree().paused = true
+		dlg.show_dialogue(msgs)
+		await dlg.dialogue_finished
+		get_tree().paused = false
+
 	var e: CharacterBody2D = _enemy_scene.instantiate()
 	e.global_position = Vector2(1600, 1800)
 	e.is_boss = true; e.max_health = 500; e.move_speed = 60
@@ -367,5 +402,40 @@ func _input(event: InputEvent) -> void:
 	if _is_game_over and event.is_action_pressed("move_up"):
 		get_tree().paused = false; get_tree().reload_current_scene()
 	if event is InputEventKey and event.keycode == KEY_M and event.pressed and _game_started:
-		var mp: Control = $"../HUDLayer/MapPanel"
-		mp.visible = not mp.visible
+		_toggle_map()
+
+func _toggle_map() -> void:
+	var mp: Control = $"../HUDLayer/MapPanel"
+	mp.visible = not mp.visible
+	if mp.visible:
+		_update_map_position()
+
+func _update_map_position() -> void:
+	var content: Label = $"../HUDLayer/MapPanel/Content"
+	if not player: return
+	var px := int(player.global_position.x / 32)
+	var py := int(player.global_position.y / 24)
+	var zone := _get_zone_name(player.global_position)
+	var map_text := "┌─────────────────────────────┐\n"
+	map_text += "│  ⚠ Boss间 — 第三试炼      │\n"
+	map_text += "│  ┌────┬────┬────┬────┬──┐  │\n"
+	map_text += "│  │教A │教B │走廊│教C │教D│  │\n"
+	map_text += "│  ├────┴────┼────┴────┴──┤  │\n"
+	map_text += "│  │  玄关   │   走廊     │  │\n"
+	map_text += "│  ├─────────┴───────────┤  │\n"
+	map_text += "│  │       操场           │  │\n"
+	map_text += "│  │    🌳  ●  🌳        │  │\n"
+	map_text += "│  │      校门            │  │\n"
+	map_text += "│  └──────────────────────┘  │\n"
+	map_text += "│  当前位置: %s              │\n" % zone
+	map_text += "│  坐标: (%d, %d)            │\n" % [px, py]
+	map_text += "└─────────────────────────────┘"
+	content.text = map_text
+
+func _get_zone_name(pos: Vector2) -> String:
+	var y := pos.y
+	if y > 1800: return "操场·校门广场"
+	if y > 1500: return "教学楼·玄关"
+	if y > 1100: return "教学楼·走廊"
+	if y > 700: return "教室区域"
+	return "Boss间·最深处"
