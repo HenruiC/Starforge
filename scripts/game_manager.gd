@@ -37,12 +37,7 @@ var _screen_size: Vector2
 var _game_started: bool = false
 var _difficulty_scale: float = 1.3
 var _mission_manager: Node = null
-var sel_wp: String = "sword"
-var sel_talents: Array = []
-var wp_btns: Dictionary = {}
-var talent_btns: Dictionary = {}
-var preview_vbox: VBoxContainer
-var confirm_btn: Button
+var _char_select_ui: CharSelectUI
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS  # 暂停时仍能接收M键/ESC
@@ -63,176 +58,15 @@ func _show_char_select() -> void:
 	_is_paused = true
 	GameState.set_state(GameState.State.CHAR_SELECT)
 	$"../HUDLayer".process_mode = Node.PROCESS_MODE_ALWAYS
+	_char_select_ui = CharSelectUI.create(char_select_panel, char_select_buttons, _on_char_select_started)
 
-	# 移除旧的叙事文本避免重叠
-	var old_n := $"../HUDLayer/CharSelect".get_node_or_null("Narrative")
-	if old_n: old_n.queue_free()
 
-	var narrative := Label.new()
-	narrative.name = "Narrative"
-	narrative.text = "\"那一天，所有人都觉醒了天赋。\n而我，只有D级的——天赋适应。\""
-	narrative.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	narrative.add_theme_font_size_override("font_size", 14)
-	narrative.add_theme_color_override("font_color", Color(0.65, 0.6, 0.45, 1.0))
-	narrative.anchor_left = 0.5; narrative.anchor_right = 0.5
-	narrative.offset_left = -350; narrative.offset_top = 130
-	narrative.offset_right = 350; narrative.offset_bottom = 170
-	$"../HUDLayer/CharSelect".add_child(narrative)
-
-	for child in char_select_buttons.get_children():
-		child.queue_free()
-
-	sel_wp = "sword"
-	sel_talents.clear()
-	wp_btns.clear()
-	talent_btns.clear()
-
-	var root := HBoxContainer.new()
-	root.add_theme_constant_override("separation", 16)
-	root.alignment = BoxContainer.ALIGNMENT_CENTER
-	char_select_buttons.add_child(root)
-
-	# 左: 武器
-	var wp_vbox := _mk_zone("武器", Color(0.3, 0.5, 0.8, 1.0))
-	root.add_child(wp_vbox)
-	for key in SkillManager.WEAPON_POOL:
-		var d: Dictionary = SkillManager.WEAPON_POOL[key]
-		var wk: String = key
-		var b := _mk_btn("weapon_" + wk, d["name"], d["desc"], Color(0.3, 0.5, 0.8, 1.0))
-		b.pressed.connect(func(): sel_wp = wk; _refresh_preview())
-		wp_vbox.add_child(b)
-		wp_btns[wk] = b
-
-	# 中: 天赋池 (9个技能用ScrollContainer)
-	var tp_vbox := _mk_zone("天赋 (选3)", Color(0.8, 0.6, 0.2, 1.0))
-	var scroll := ScrollContainer.new()
-	scroll.custom_minimum_size = Vector2(190, 280)
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	var tp_grid := GridContainer.new()
-	tp_grid.columns = 1
-	tp_grid.add_theme_constant_override("v_separation", 3)
-	scroll.add_child(tp_grid)
-	tp_vbox.add_child(scroll)
-	root.add_child(tp_vbox)
-	for key in SkillManager.TALENT_POOL:
-		var d: Dictionary = SkillManager.TALENT_POOL[key]
-		var tk: String = key
-		var b := _mk_btn("icon_" + tk, d["name"], d["desc"], d["color"])
-		b.custom_minimum_size = Vector2(175, 42)
-		b.pressed.connect(func(): _toggle_talent(tk, b))
-		talent_btns[tk] = b
-		tp_grid.add_child(b)
-
-	# 右: 预览
-	preview_vbox = _mk_zone("已选", Color(0.3, 0.8, 0.3, 1.0))
-	root.add_child(preview_vbox)
-
-	confirm_btn = Button.new()
-	confirm_btn.text = "踏入试炼"
-	confirm_btn.custom_minimum_size = Vector2(280, 48)
-	var cs := StyleBoxFlat.new()
-	cs.bg_color = Color(0.15, 0.1, 0.02, 1.0)
-	cs.border_width_left = 2; cs.border_width_right = 2
-	cs.border_width_top = 2; cs.border_width_bottom = 2
-	cs.border_color = Color(0.8, 0.6, 0.1, 0.6)
-	cs.corner_radius_top_left = 4; cs.corner_radius_top_right = 4
-	cs.corner_radius_bottom_left = 4; cs.corner_radius_bottom_right = 4
-	cs.content_margin_left = 12; cs.content_margin_right = 12
-	confirm_btn.add_theme_stylebox_override("normal", cs)
-	confirm_btn.add_theme_color_override("font_color", Color(0.9, 0.7, 0.2, 1.0))
-	confirm_btn.add_theme_font_size_override("font_size", 16)
-	confirm_btn.pressed.connect(_try_start)
-	char_select_buttons.add_child(confirm_btn)
-	_refresh_preview()
-
-func _mk_zone(title: String, color: Color) -> VBoxContainer:
-	var vb := VBoxContainer.new()
-	vb.add_theme_constant_override("separation", 4)
-	vb.custom_minimum_size = Vector2(175, 0)
-	var l := Label.new(); l.text = title
-	l.add_theme_color_override("font_color", color)
-	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	vb.add_child(l)
-	return vb
-
-func _mk_btn(icon_key: String, title: String, desc: String, color: Color) -> Button:
-	var b := Button.new()
-	b.icon = AssetLoader.texture(icon_key, 48, color)
-	b.text = title + "\n" + desc
-	b.custom_minimum_size = Vector2(170, 55)
-	b.expand_icon = true
-	var s := _mk_style(color); b.add_theme_stylebox_override("normal", s)
-	return b
-
-func _mk_style(c: Color) -> StyleBoxFlat:
-	var s := StyleBoxFlat.new()
-	s.bg_color = Color(0.08, 0.08, 0.16, 1.0)
-	s.border_width_left = 1; s.border_width_right = 1
-	s.border_width_top = 1; s.border_width_bottom = 1
-	s.border_color = Color(c.r, c.g, c.b, 0.3)
-	s.corner_radius_top_left = 4; s.corner_radius_top_right = 4
-	s.corner_radius_bottom_left = 4; s.corner_radius_bottom_right = 4
-	s.content_margin_left = 6; s.content_margin_right = 6
-	s.content_margin_top = 4; s.content_margin_bottom = 4
-	return s
-
-func _toggle_talent(key: String, btn: Button) -> void:
-	if key in sel_talents:
-		sel_talents.erase(key)
-		btn.modulate = Color.WHITE
-		var s := _mk_style(SkillManager.TALENT_POOL[key]["color"])
-		btn.add_theme_stylebox_override("normal", s)
-	else:
-		if sel_talents.size() >= 3: return
-		sel_talents.append(key)
-		btn.modulate = Color(0.5, 1.0, 0.5, 1.0)
-		# 选中高亮边框
-		var h := _mk_style(SkillManager.TALENT_POOL[key]["color"])
-		h.border_color = Color.GREEN
-		h.border_width_left = 2; h.border_width_right = 2
-		h.border_width_top = 2; h.border_width_bottom = 2
-		btn.add_theme_stylebox_override("normal", h)
-	_refresh_preview()
-
-func _refresh_preview() -> void:
-	if preview_vbox == null: return
-	for child in preview_vbox.get_children():
-		if child is Label and child.text != "": child.queue_free()
-
-	# 更新武器按钮高亮
-	_update_weapon_highlight()
-
-	var wp: Dictionary = SkillManager.WEAPON_POOL[sel_wp]
-	var wl := Label.new(); wl.text = "武器: %s %s" % [wp["icon"], wp["name"]]
-	wl.add_theme_color_override("font_color", Color(0.5, 0.7, 1.0, 1.0))
-	preview_vbox.add_child(wl)
-
-func _update_weapon_highlight() -> void:
-	for wk in wp_btns:
-		wp_btns[wk].modulate = Color.GREEN if wk == sel_wp else Color.WHITE
-	var tl := Label.new(); tl.text = "天赋: %d/3" % sel_talents.size()
-	preview_vbox.add_child(tl)
-	for tid in sel_talents:
-		var td: Dictionary = SkillManager.TALENT_POOL[tid]
-		var l := Label.new(); l.text = "  %s %s" % [td["icon"], td["name"]]
-		l.add_theme_color_override("font_color", td["color"])
-		preview_vbox.add_child(l)
-	if confirm_btn:
-		var ready := sel_talents.size() == 3
-		confirm_btn.text = "踏入试炼" if ready else "选择天赋 (%d/3)" % sel_talents.size()
-		confirm_btn.disabled = not ready
-		if ready:
-			var cs2 := confirm_btn.get_theme_stylebox("normal", "").duplicate() as StyleBoxFlat
-			cs2.border_color = Color.GREEN
-			confirm_btn.add_theme_stylebox_override("normal", cs2)
-
-func _try_start() -> void:
-	if sel_talents.size() != 3: return
+func _on_char_select_started(weapon: String, talents: Array) -> void:
 	char_select_panel.visible = false
 	$"../HUDLayer".process_mode = Node.PROCESS_MODE_INHERIT
 	_is_paused = false
 	GameState.set_state(GameState.State.PLAYING)
-	player.init_skills(sel_talents.duplicate(), sel_wp)
+	player.init_skills(talents, weapon)
 
 func _on_game_start(_preset: String) -> void:
 	var ms: Node = $"../HUDLayer/MapSystem"; if ms and ms.has_method("init"): ms.init(player, $"../HUDLayer")
@@ -243,7 +77,7 @@ func _on_game_start(_preset: String) -> void:
 	_mission_manager.boss_spawned.connect(_on_boss_spawn)
 	add_child(_mission_manager)
 	_update_mission_hud()
-	
+
 
 	spawn_timer.wait_time = base_spawn_interval; spawn_timer.start()
 	wave_timer.wait_time = wave_duration; wave_timer.start()
@@ -344,21 +178,9 @@ func _show_upgrade_panel() -> void:
 	GameState.set_state(GameState.State.PAUSED)
 	$"../HUDLayer".process_mode = Node.PROCESS_MODE_ALWAYS
 	level_up_panel.visible = true
-	for child in upgrade_buttons.get_children(): child.queue_free()
 	var pool: Array = player.skill_manager.get_upgrade_pool()
-	pool.shuffle(); var n: int = mini(pool.size(), 3)
-	for i in n:
-		var opt: Dictionary = pool[i]
-		var btn := Button.new()
-		btn.text = "%s %s\n%s" % [opt.icon, opt.name, opt.desc]
-		btn.custom_minimum_size = Vector2(180, 80)
-		var oid: String = opt.id; btn.pressed.connect(func(): _on_upgrade_chosen(oid))
-		var s := _mk_style(Color(0.5, 0.4, 0.1, 1.0))
-		btn.add_theme_stylebox_override("normal", s)
-		var h := s.duplicate() as StyleBoxFlat
-		h.bg_color = Color(0.25, 0.25, 0.35, 1.0); h.border_color = Color(0.8, 0.6, 0.1, 1.0)
-		btn.add_theme_stylebox_override("hover", h)
-		upgrade_buttons.add_child(btn)
+	pool.shuffle()
+	UpgradeUI.create(upgrade_buttons, pool, _on_upgrade_chosen)
 
 func _on_upgrade_chosen(id: String) -> void:
 	player.apply_upgrade(id)
@@ -366,7 +188,7 @@ func _on_upgrade_chosen(id: String) -> void:
 	$"../HUDLayer".process_mode = Node.PROCESS_MODE_INHERIT
 	_is_paused = false; get_tree().paused = false
 	GameState.set_state(GameState.State.PLAYING)
-	if player._pending_level_ups > 0:
+	if player.has_pending_level_ups():
 		await get_tree().create_timer(0.2).timeout
 		_show_upgrade_panel()
 

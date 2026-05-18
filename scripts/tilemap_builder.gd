@@ -46,6 +46,7 @@ func _draw_all() -> void:
 	for y in range(0, rows): tm.set_cell(1, Vector2i(cols - 1, y), 1, W)
 
 	# 校门(南侧中央, 6格宽)
+	@warning_ignore("integer_division")
 	var gx := cols / 2
 	for dx in range(-3, 4): tm.set_cell(1, Vector2i(gx + dx, rows - 1), 2, D)
 
@@ -64,9 +65,11 @@ func _draw_all() -> void:
 	for x in range(bx + bw, rx):
 		for y in range(by + 2, by + bh - 2):
 			tm.set_cell(0, Vector2i(x, y), 0, F)
+	@warning_ignore("integer_division")
 	_label(gx, by + bh / 2, "中央庭院")
 
 	# 连廊(两楼之间通道)
+	@warning_ignore("integer_division")
 	var conn_y := by + bh / 2
 	for x in range(bx + bw - 2, rx + 4):
 		tm.set_cell(0, Vector2i(x, conn_y), 2, D)
@@ -77,12 +80,14 @@ func _draw_all() -> void:
 
 	# Boss间体育馆(北侧)
 	var gym_y := by - 14; var gym_w := 14
+	@warning_ignore("integer_division")
 	_building(gx - gym_w / 2, gym_y, gym_w, 8, W, D)
 	for dx in range(-3, 4): tm.set_cell(1, Vector2i(gx + dx, gym_y + 8), 2, D)
 	_label(gx, gym_y - 1, "Boss间")
 
 	# 区域标签
 	_label(gx, rows - 1, "校门"); _label(gx, rows - 12, "操场")
+	@warning_ignore("integer_division")
 	_label(bx + bw / 2, by + bh / 2, "左楼"); _label(rx + bw / 2, ry2 + bh / 2, "右楼")
 	_label(gx, gym_y + 9, "体育馆")
 
@@ -97,6 +102,7 @@ func _building(x: int, y: int, bw: int, bh: int, W: Vector2i, D: Vector2i) -> vo
 		tm.set_cell(1, Vector2i(x, yy), 1, W)
 		tm.set_cell(1, Vector2i(x + bw - 1, yy), 1, W)
 	# 下墙门洞
+	@warning_ignore("integer_division")
 	var mx := x + bw / 2
 	for xx in range(x, mx - 2): tm.set_cell(0, Vector2i(xx, y + bh - 1), 0, Vector2i(0, 0))
 	for xx in range(mx - 2, mx + 3): tm.set_cell(1, Vector2i(xx, y + bh - 1), 2, D)

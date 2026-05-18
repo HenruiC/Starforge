@@ -129,6 +129,10 @@ func level_up() -> void:
 	if level % 5 == 0 and skill_manager:
 		skill_manager.check_skill_evolution()
 
+func has_pending_level_ups() -> bool:
+	return _pending_level_ups > 0
+
+
 func apply_upgrade(upgrade_id: String) -> void:
 	_pending_level_ups -= 1
 

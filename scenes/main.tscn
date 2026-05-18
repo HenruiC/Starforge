@@ -42,7 +42,7 @@ script = ExtResource("2_cam")
 script = ExtResource("7_nav")
 
 [node name="SchoolMap" type="Node2D" parent="." unique_id=1487415849]
-z_index = -1
+z_index = 0
 script = ExtResource("8_sm")
 
 [node name="Background" type="ColorRect" parent="." unique_id=1688606201]
