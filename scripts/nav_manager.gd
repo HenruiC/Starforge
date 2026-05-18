@@ -21,7 +21,6 @@ func _setup_navigation() -> void:
 		Vector2(3152, 2352), Vector2(48, 2352)
 	])
 	nav_poly.add_outline(outline)
-	nav_poly.make_polygons_from_outlines()
 	_nav_region.navigation_polygon = nav_poly
 	add_child(_nav_region)
 

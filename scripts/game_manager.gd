@@ -253,7 +253,6 @@ func _process(delta: float) -> void:
 	_wave_elapsed += delta
 	timer_label.text = "剩余: %.0fs" % maxf(wave_duration - _wave_elapsed, 0.0)
 	if _mission_manager:
-		_mission_manager.notify_timer(delta)
 		_update_mission_hud()
 
 
