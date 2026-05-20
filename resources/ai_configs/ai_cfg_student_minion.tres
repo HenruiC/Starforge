@@ -1,0 +1,36 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/ai_enemy_config.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+initial_behavior = 0
+detection_range = 400.0
+leash_range = 600.0
+chase_speed_mult = 0.9
+melee_range = 40.0
+melee_cooldown = 1.5
+preferred_distance = 180.0
+ranged_cooldown = 2.0
+patrol_points = []
+patrol_wait_time = 1.0
+patrol_vision_angle = 120.0
+patrol_vision_range = 180.0
+guard_position = Vector2(0, 0)
+guard_radius = 60.0
+guard_leash = 200.0
+flee_health_ratio = 0.2
+flee_speed_mult = 1.3
+flee_timeout = 5.0
+ambush_trigger_distance = 60.0
+ambush_bonus_damage_mult = 1.5
+ambush_bonus_duration = 2.0
+berserk_enabled = true
+berserk_duration = 3.0
+berserk_speed_mult = 1.6
+berserk_cooldown_mult = 0.4
+berserk_damage_threshold = 0
+enrage_radius = 0.0
+path_update_interval = 0.05
+decision_interval = 0.15
+use_nav_agent = true

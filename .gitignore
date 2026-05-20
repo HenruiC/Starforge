@@ -12,6 +12,9 @@ build/
 # Imported assets (auto-generated)
 *.import
 
+# Godot editor log
+godot_editor.log
+
 # OS files
 Thumbs.db
 Desktop.ini

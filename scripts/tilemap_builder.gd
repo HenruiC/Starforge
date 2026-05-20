@@ -18,6 +18,26 @@ func _setup_tiles() -> void:
 	_add_color_tile(ts, 2, Color(0.2, 0.75, 0.2))   # 门: 绿色
 	tm.tile_set = ts; tm.add_layer(1)
 
+	# 创建 TileSet 物理层 (Godot 4.6.2 新建的 TileSet 无默认物理层)
+	ts.add_physics_layer(0)
+
+	# 为墙壁 tile (source_id=1) 添加物理碰撞多边形
+	var wall_source := ts.get_source(1) as TileSetAtlasSource
+	if wall_source:
+		var wall_tile_data := wall_source.get_tile_data(Vector2i(0, 0), 0)
+		wall_tile_data.add_collision_polygon(0)
+		wall_tile_data.set_collision_polygon_points(0, 0, PackedVector2Array([
+			Vector2(0, 0),
+			Vector2(T, 0),
+			Vector2(T, T),
+			Vector2(0, T)
+		]))
+
+	# 将墙壁碰撞设到 collision layer 4 (value 8)
+	ts.set_physics_layer_collision_layer(0, 8)
+
+	# 门 tiles (source_id=2) 不做碰撞 — 可通过
+
 func _add_color_tile(ts: TileSet, source_id: int, color: Color) -> void:
 	# 优先用AssetLoader加载真纹理, 失败则纯色
 	var tex_name := ""

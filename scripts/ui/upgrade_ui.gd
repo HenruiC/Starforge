@@ -6,7 +6,8 @@ extends RefCounted
 # 使用 UIHelpers.make_style() 创建按钮样式
 
 
-static func create(buttons_container: Container, pool: Array, on_chosen: Callable) -> void:
+static func create(buttons_container: Container, pool: Array, on_chosen: Callable) -> Dictionary:
+	var btn_map: Dictionary = {}  # id -> Button
 	for child in buttons_container.get_children():
 		child.queue_free()
 
@@ -26,4 +27,15 @@ static func create(buttons_container: Container, pool: Array, on_chosen: Callabl
 		h.bg_color = Color(0.25, 0.25, 0.35, 1.0)
 		h.border_color = Color(0.8, 0.6, 0.1, 1.0)
 		btn.add_theme_stylebox_override("hover", h)
+
+		# Hover feedback
+		btn.mouse_entered.connect(func():
+			UIEffects.hover_in(btn)
+		)
+		btn.mouse_exited.connect(func():
+			UIEffects.hover_out(btn)
+		)
+
 		buttons_container.add_child(btn)
+		btn_map[oid] = btn
+	return btn_map

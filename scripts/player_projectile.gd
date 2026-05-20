@@ -44,7 +44,7 @@ func _on_hit(body: Node2D) -> void:
 
 func _spawn_hit_vfx(pos: Vector2) -> void:
 	var spark := ColorRect.new()
-	spark.color = Color(1.0, 0.8, 0.2, 0.8)
+	spark.color = Color(1.0, 0.9, 0.1, 1.0)  # 更亮，新地图可见
 	spark.size = Vector2(6, 6)
 	spark.position = pos - Vector2(3, 3)
 	spark.z_index = 16

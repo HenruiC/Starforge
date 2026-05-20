@@ -1,0 +1,49 @@
+[gd_scene format=3 uid="uid://dehvqf5mrujyl"]
+
+[ext_resource type="Script" uid="uid://n5g8dfeqrqga" path="res://scripts/boss/student_minion.gd" id="1_script"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_minion"]
+
+[node name="StudentMinion" type="CharacterBody2D" unique_id=1178819486 groups=["enemy", "student_minion"]]
+collision_layer = 2
+collision_mask = 8
+script = ExtResource("1_script")
+contact_damage = 8
+score_value = 2
+xp_value = 10
+max_health = 15
+move_speed = 140.0
+
+[node name="HitFlash" type="ColorRect" parent="." unique_id=4071293]
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 10.0
+offset_bottom = 10.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0)
+
+[node name="Sprite" type="ColorRect" parent="." unique_id=2062412652]
+offset_left = -8.0
+offset_top = -12.0
+offset_right = 8.0
+offset_bottom = 12.0
+scale = Vector2(0.7, 0.7)
+color = Color(0.85, 0.85, 0.8, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1587359994]
+shape = SubResource("CircleShape2D_minion")
+
+[node name="HealthBar" type="ProgressBar" parent="." unique_id=994072255]
+custom_minimum_size = Vector2(20, 3)
+offset_left = -10.0
+offset_top = -16.0
+offset_right = 10.0
+offset_bottom = -12.0
+value = 100.0
+show_percentage = false
+
+[node name="ContactArea" type="Area2D" parent="." unique_id=452971782]
+collision_layer = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ContactArea" unique_id=547202215]
+shape = SubResource("CircleShape2D_minion")

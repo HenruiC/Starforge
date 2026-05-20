@@ -2,6 +2,7 @@ class_name SkillManager
 extends Node
 
 var player: CharacterBody2D = null
+var owner_unit = null  # CombatUnit 兼容引用（Phase 3 后替代 player）
 var effect_parent: Node2D = null
 var attack_area: Area2D = null
 var skills: Array[SkillBase] = []
@@ -28,6 +29,7 @@ const WEAPON_POOL := {
 
 func init(ply: CharacterBody2D, eff: Node2D, area: Area2D, skill_ids: Array) -> void:
 	player = ply
+	owner_unit = ply
 	effect_parent = eff
 	attack_area = area
 
@@ -86,7 +88,7 @@ func _create_skill(id: String) -> SkillBase:
 	return null
 
 func add_skill(skill: SkillBase) -> void:
-	skill.setup(player, effect_parent)
+	skill.setup(owner_unit, effect_parent)
 	skill.attack_area = attack_area
 	skills.append(skill)
 	add_child(skill)

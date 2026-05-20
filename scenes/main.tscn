@@ -21,7 +21,7 @@ font_color = Color(0.8, 0.7, 0.3, 1)
 script = ExtResource("1_gm")
 
 [node name="Player" parent="GameManager" unique_id=508149488 instance=ExtResource("3_player")]
-position = Vector2(1600, 2200)
+position = Vector2(2880, 3600)
 
 [node name="Enemies" type="Node2D" parent="GameManager" unique_id=319492698]
 
@@ -35,14 +35,13 @@ wait_time = 30.0
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1334731866]
 position = Vector2(640, 360)
-zoom = Vector2(0.7, 0.7)
+zoom = Vector2(0.55, 0.55)
 script = ExtResource("2_cam")
 
 [node name="NavManager" type="Node2D" parent="." unique_id=1822902892]
 script = ExtResource("7_nav")
 
 [node name="SchoolMap" type="Node2D" parent="." unique_id=1487415849]
-z_index = 0
 script = ExtResource("8_sm")
 
 [node name="Background" type="ColorRect" parent="." unique_id=1688606201]
@@ -189,6 +188,7 @@ offset_left = -300.0
 offset_top = 60.0
 offset_right = 300.0
 offset_bottom = 110.0
+grow_horizontal = 2
 theme_override_colors/font_color = Color(0.9, 0.7, 0.2, 1)
 theme_override_font_sizes/font_size = 32
 text = "选择你的战斗风格"
@@ -203,6 +203,7 @@ offset_left = -300.0
 offset_top = 115.0
 offset_right = 300.0
 offset_bottom = 145.0
+grow_horizontal = 2
 theme_override_colors/font_color = Color(0.5, 0.5, 0.5, 1)
 text = "—— 天赋猎人 · 战斗原型 ——"
 horizontal_alignment = 1
@@ -216,6 +217,7 @@ offset_left = -480.0
 offset_top = 180.0
 offset_right = 480.0
 offset_bottom = 500.0
+grow_horizontal = 2
 theme_override_constants/separation = 20
 alignment = 1
 
@@ -247,6 +249,7 @@ offset_left = -200.0
 offset_top = 80.0
 offset_right = 200.0
 offset_bottom = 120.0
+grow_horizontal = 2
 theme_override_colors/font_color = Color(0.9, 0.7, 0.2, 1)
 theme_override_font_sizes/font_size = 28
 text = "⬆ 升级！选择一个强化方向 ⬆"
@@ -261,6 +264,7 @@ offset_left = -310.0
 offset_top = 220.0
 offset_right = 310.0
 offset_bottom = 320.0
+grow_horizontal = 2
 theme_override_constants/separation = 20
 alignment = 1
 
@@ -290,6 +294,7 @@ anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -200.0
 offset_right = 200.0
+grow_horizontal = 2
 theme_override_colors/font_color = Color(0.9, 0.7, 0.2, 1)
 theme_override_font_sizes/font_size = 24
 text = "—— 学校副本地图 ——"
@@ -301,7 +306,10 @@ anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -400.0
+offset_top = 30.0
 offset_right = 400.0
+offset_bottom = 430.0
+grow_horizontal = 2
 texture = ExtResource("6_tipki")
 expand_mode = 1
 stretch_mode = 5
@@ -312,8 +320,10 @@ anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -400.0
+offset_top = 30.0
 offset_right = 400.0
-color = Color(0.05, 0.05, 0.08, 0.7)
+offset_bottom = 430.0
+grow_horizontal = 2
 
 [node name="PlayerMarker" type="Label" parent="HUDLayer/MapPanel" unique_id=640995742]
 layout_mode = 1
@@ -322,6 +332,7 @@ anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -10.0
 offset_right = 10.0
+grow_horizontal = 2
 theme_override_colors/font_color = Color(1, 0.3, 0.2, 1)
 theme_override_font_sizes/font_size = 24
 text = "●"
@@ -334,6 +345,7 @@ anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -350.0
 offset_right = 350.0
+grow_horizontal = 2
 theme_override_colors/font_color = Color(0.9, 0.7, 0.2, 1)
 theme_override_font_sizes/font_size = 14
 text = "当前位置: ---"
@@ -346,6 +358,7 @@ anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -200.0
 offset_right = 200.0
+grow_horizontal = 2
 theme_override_colors/font_color = Color(0.5, 0.5, 0.5, 1)
 text = "[ M 打开 | ESC 关闭 ]  已探索: 0%"
 horizontal_alignment = 1

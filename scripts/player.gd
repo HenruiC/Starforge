@@ -1,9 +1,10 @@
 class_name Player
-extends CharacterBody2D
+extends CombatUnit
 
 # === 基础属性 ===
-@export var max_health: int = 100
-@export var move_speed: float = 300.0
+# max_health / move_speed 从 CombatUnit 继承
+# _health / is_dead / aim_direction 从 CombatUnit 继承
+
 @export var attack_power: int = 15
 @export var defense: int = 2
 @export var attack_range: float = 120.0
@@ -38,10 +39,7 @@ var skill_manager: SkillManager = null
 var _pending_level_ups: int = 0
 
 # === 私有 ===
-var _health: int
 var _contact_timer: float = 0.0
-var _is_dead: bool = false
-var _aim_direction: Vector2 = Vector2.RIGHT
 
 signal level_up_available(count: int)
 signal preset_chosen(preset: String)
@@ -59,6 +57,12 @@ func init_skills(skill_ids: Array, weapon_id: String) -> void:
 	var wp: Dictionary = SkillManager.WEAPON_POOL.get(weapon_id, SkillManager.WEAPON_POOL["sword"])
 	weapon_type = weapon_id
 	weapon_multiplier = wp["mult"]
+	# 武器外观
+	match weapon_id:
+		"sword": sprite.color = Color(0.3, 0.5, 0.9)  # 蓝
+		"bow": sprite.color = Color(0.2, 0.8, 0.4)     # 绿
+		"staff": sprite.color = Color(0.7, 0.3, 0.8)   # 紫
+		_: sprite.color = Color(0.3, 0.5, 0.9)
 	move_speed = wp["spd"]
 	attack_range = wp["range"]
 	(attack_shape.shape as CircleShape2D).radius = attack_range
@@ -67,7 +71,7 @@ func init_skills(skill_ids: Array, weapon_id: String) -> void:
 	preset_chosen.emit(weapon_id)
 
 func _physics_process(delta: float) -> void:
-	if _is_dead: return
+	if is_dead: return
 	if GameState.current_state != GameState.State.PLAYING and GameState.current_state != GameState.State.CHAR_SELECT: return
 
 	# 移动(WASD)
@@ -76,7 +80,7 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 	# 更新攻击方向(鼠标)
-	_aim_direction = (get_global_mouse_position() - global_position).normalized()
+	aim_direction = (get_global_mouse_position() - global_position).normalized()
 
 	# 接触伤害
 	_contact_timer += delta
@@ -90,10 +94,10 @@ func _physics_process(delta: float) -> void:
 	if skill_manager:
 		skill_manager.process_all(delta)
 
-func take_damage(raw_amount: int) -> void:
-	if _is_dead:
+func take_damage(amount: int, source: CombatUnit = null) -> void:
+	if is_dead:
 		return
-	var actual: int = max(raw_amount - defense, 1)
+	var actual: int = max(amount - int(get_stat("defense")), 1)
 	_health = max(_health - actual, 0)
 	_update_all_ui()
 	EventBus.player_hit.emit(actual, _health)
@@ -103,11 +107,13 @@ func take_damage(raw_amount: int) -> void:
 	t.tween_property(hit_flash, "color:a", 0.0, 0.12)
 
 	if _health <= 0:
-		_die()
+		_die(source)
 
-func _die() -> void:
-	_is_dead = true
-	EventBus.player_died.emit()
+func _die(killer: CombatUnit = null) -> void:
+	if is_dead:
+		return
+	super._die(killer)
+	EventBus.player_died.emit(0)
 	sprite.modulate = Color(0.4, 0.4, 0.4, 0.6)
 	set_physics_process(false)
 
@@ -123,15 +129,41 @@ func level_up() -> void:
 	_pending_level_ups += 1
 	exp_to_next = int(exp_to_next * 1.35)
 	_health = min(_health + 15, max_health)
+	_play_level_up_effect()
 	level_up_available.emit(_pending_level_ups)
 
 	# 每5级技能质变检查
 	if level % 5 == 0 and skill_manager:
 		skill_manager.check_skill_evolution()
 
+func _play_level_up_effect() -> void:
+	# EXP Bar 发光 + 弹跳 (0.2s)
+	UIEffects.kill_group("hud_exp")
+	exp_bar.scale = Vector2.ONE
+	exp_bar.modulate = Color.WHITE
+	var t := create_tween()
+	t.tween_property(exp_bar, "scale", Vector2(1.15, 1.15), 0.1).set_ease(Tween.EASE_OUT)
+	t.parallel().tween_property(exp_bar, "modulate", Color(1.0, 1.0, 0.5, 1.0), 0.1)
+	t.tween_property(exp_bar, "scale", Vector2.ONE, 0.1).set_ease(Tween.EASE_OUT)
+	t.parallel().tween_property(exp_bar, "modulate", Color.WHITE, 0.1)
+
+	# 在玩家位置飘 "Level Up!" 文字 (0.3s 上升淡出)
+	var float_label := Label.new()
+	float_label.text = "Level Up!"
+	float_label.add_theme_color_override("font_color", Color(1.0, 0.8, 0.2, 1.0))
+	float_label.add_theme_font_size_override("font_size", 22)
+	float_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	float_label.position = global_position - Vector2(50, 30)
+	float_label.z_index = 30
+	get_parent().add_child(float_label)
+
+	var ft := create_tween().set_parallel(true)
+	ft.tween_property(float_label, "position:y", float_label.position.y - 40, 0.3).set_ease(Tween.EASE_OUT)
+	ft.tween_property(float_label, "modulate:a", 0.0, 0.3).set_delay(0.15)
+	ft.finished.connect(float_label.queue_free, CONNECT_ONE_SHOT)
+
 func has_pending_level_ups() -> bool:
 	return _pending_level_ups > 0
-
 
 func apply_upgrade(upgrade_id: String) -> void:
 	_pending_level_ups -= 1
@@ -180,3 +212,16 @@ func _update_skill_icons() -> void:
 		icon.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		icon.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		skill_icons.add_child(icon)
+
+# === CombatUnit 虚拟方法覆盖 ===
+
+## 提供玩家专属的基础属性值
+func _get_base_stat(stat_name: String, default: float = 0.0) -> float:
+	match stat_name:
+		"attack_power":
+			return float(attack_power)
+		"defense":
+			return float(defense)
+		"attack_range":
+			return float(attack_range)
+	return super._get_base_stat(stat_name, default)

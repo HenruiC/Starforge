@@ -35,7 +35,7 @@ func _build() -> void:
 
 	var narrative := Label.new()
 	narrative.name = "Narrative"
-	narrative.text = "\"那一天，所有人都觉醒了天赋。\n而我，只有D级的——天赋适应。\""
+	narrative.text = "\"放学铃响的时候，我以为今天和昨天一样。\n我错了。\""
 	narrative.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	narrative.add_theme_font_size_override("font_size", 14)
 	narrative.add_theme_color_override("font_color", Color(0.65, 0.6, 0.45, 1.0))
@@ -102,7 +102,7 @@ func _build() -> void:
 	root.add_child(preview_vbox)
 
 	confirm_btn = Button.new()
-	confirm_btn.text = "踏入试炼"
+	confirm_btn.text = "推开门"
 	confirm_btn.custom_minimum_size = Vector2(280, 48)
 	var cs := StyleBoxFlat.new()
 	cs.bg_color = Color(0.15, 0.1, 0.02, 1.0)
@@ -121,6 +121,15 @@ func _build() -> void:
 	confirm_btn.add_theme_color_override("font_color", Color(0.9, 0.7, 0.2, 1.0))
 	confirm_btn.add_theme_font_size_override("font_size", 16)
 	confirm_btn.pressed.connect(_try_start)
+
+	# Hover feedback for confirm button
+	confirm_btn.mouse_entered.connect(func():
+		UIEffects.hover_in(confirm_btn)
+	)
+	confirm_btn.mouse_exited.connect(func():
+		UIEffects.hover_out(confirm_btn)
+	)
+
 	buttons_container.add_child(confirm_btn)
 
 	_refresh_preview()
@@ -180,7 +189,7 @@ func _update_weapon_highlight() -> void:
 
 	if confirm_btn:
 		var ready := sel_talents.size() == 3
-		confirm_btn.text = "踏入试炼" if ready else "选择天赋 (%d/3)" % sel_talents.size()
+		confirm_btn.text = "推开门" if ready else "选择天赋 (%d/3)" % sel_talents.size()
 		confirm_btn.disabled = not ready
 		if ready:
 			var box: StyleBox = confirm_btn.get_theme_stylebox("normal", "")

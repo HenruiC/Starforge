@@ -1,0 +1,64 @@
+[gd_resource type="Resource" script_class="DialogueBook" format=3 uid="uid://dkasey3uetvon"]
+
+[ext_resource type="Script" uid="uid://htsdw1vqcd4k" path="res://scripts/resources/dialogue_group.gd" id="1_fmh4j"]
+[ext_resource type="Script" uid="uid://pontetku8xxe" path="res://scripts/resources/dialogue_choice.gd" id="2_oubcv"]
+[ext_resource type="Script" uid="uid://bv1opy5o6r16w" path="res://scripts/resources/dialogue_entry.gd" id="3_q7hmn"]
+[ext_resource type="Script" uid="uid://wsffov8xcd2j" path="res://scripts/resources/dialogue_book.gd" id="4_swjvr"]
+
+[sub_resource type="Resource" id="Resource_x4paf"]
+script = ExtResource("3_q7hmn")
+speaker = "123"
+text = "你好你好"
+next_entry = 2
+
+[sub_resource type="Resource" id="Resource_5m1k4"]
+script = ExtResource("3_q7hmn")
+speaker = "465"
+text = "你好你好"
+
+[sub_resource type="Resource" id="Resource_w5oxo"]
+script = ExtResource("1_fmh4j")
+group_id = "group_0"
+group_name = "新对话组"
+entries = Array[ExtResource("3_q7hmn")]([SubResource("Resource_x4paf"), SubResource("Resource_5m1k4")])
+
+[sub_resource type="Resource" id="Resource_tuhma"]
+script = ExtResource("3_q7hmn")
+speaker = "你哈你好"
+text = "你哈你好你哈你好"
+next_entry = 2
+
+[sub_resource type="Resource" id="Resource_b32mu"]
+script = ExtResource("3_q7hmn")
+speaker = "465"
+text = "你好你好"
+
+[sub_resource type="Resource" id="Resource_xpbwp"]
+script = ExtResource("1_fmh4j")
+group_id = "group_1"
+group_name = "新对话组"
+entries = Array[ExtResource("3_q7hmn")]([SubResource("Resource_tuhma"), SubResource("Resource_b32mu")])
+
+[sub_resource type="Resource" id="Resource_r41iu"]
+script = ExtResource("3_q7hmn")
+speaker = "啊实打实的"
+text = "啊实打实的"
+next_entry = 2
+
+[sub_resource type="Resource" id="Resource_ri17f"]
+script = ExtResource("3_q7hmn")
+speaker = "啊实打实的"
+text = "啊实打实的"
+
+[sub_resource type="Resource" id="Resource_nxxtb"]
+script = ExtResource("1_fmh4j")
+group_id = "group_2"
+group_name = "新对话组"
+entries = Array[ExtResource("3_q7hmn")]([SubResource("Resource_r41iu"), SubResource("Resource_ri17f")])
+
+[resource]
+script = ExtResource("4_swjvr")
+book_id = "new_book"
+book_name = "新对话书"
+groups = Array[ExtResource("1_fmh4j")]([SubResource("Resource_w5oxo"), SubResource("Resource_xpbwp"), SubResource("Resource_nxxtb")])
+start_group_id = "group_0"

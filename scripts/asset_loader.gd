@@ -1,15 +1,27 @@
 class_name AssetLoader
 extends Node
 
-# 资产加载器 v2 — FileAccess直接读取JPG字节，绕过Godot导入系统
+# 资产加载器 v3 — PNG优先，JPG fallback，完整NAME_MAP
+# 杨奇监修：暗而不黑，质感优先于特效
 
 const GEN_DIR := "res://assets/generated/"
 
+# 全量映射 — 9个技能 + 3个武器，不依赖隐式拼接
 const NAME_MAP := {
+	# 技能图标 (9)
 	"icon_chain_lightning": "icon_lightning",
 	"icon_ice_nova": "icon_ice",
 	"icon_fire_trail": "icon_fire",
 	"icon_shadow_clone": "icon_shadow",
+	"icon_slash": "icon_slash",
+	"icon_aoe": "icon_aoe",
+	"icon_multi_shot": "icon_multi_shot",
+	"icon_whirlwind": "icon_whirlwind",
+	"icon_snipe": "icon_snipe",
+	# 武器图标 (3)
+	"weapon_sword": "weapon_sword",
+	"weapon_bow": "weapon_bow",
+	"weapon_staff": "weapon_staff",
 }
 
 static var _cache: Dictionary = {}
@@ -19,35 +31,49 @@ static func texture(tex_name: String, _size: int = 64, fallback_color: Color = C
 		return _cache[tex_name] as Texture2D
 
 	var mapped: String = NAME_MAP.get(tex_name, tex_name)
-	var path := GEN_DIR + mapped + ".jpg"
 
-	# 1. 尝试 ResourceLoader (需要.import)
-	if ResourceLoader.exists(path):
-		var r := load(path)
+	# 1. PNG 优先 — ResourceLoader (需要.import)
+	var png_path := GEN_DIR + mapped + ".png"
+	if ResourceLoader.exists(png_path) and FileAccess.file_exists(png_path):
+		var r := load(png_path)
 		if r:
 			_cache[tex_name] = r
 			return r
 
-	# 2. FileAccess 直接读JPG字节 (不依赖导入)
-	var img := _load_jpg(path)
-	if img:
-		var tex := ImageTexture.create_from_image(img)
+	# 2. PNG — FileAccess 直接读字节 (不依赖导入)
+	var png_img := _load_png(png_path)
+	if png_img:
+		var tex := ImageTexture.create_from_image(png_img)
 		_cache[tex_name] = tex
 		return tex
 
-	# 3. PNG fallback
-	var png_path := GEN_DIR + mapped + ".png"
-	var img2 := _load_png(png_path)
-	if img2:
-		var tex := ImageTexture.create_from_image(img2)
+	# 3. JPG fallback — ResourceLoader
+	var jpg_path := GEN_DIR + mapped + ".jpg"
+	if ResourceLoader.exists(jpg_path):
+		var r := load(jpg_path)
+		if r:
+			_cache[tex_name] = r
+			return r
+
+	# 4. JPG — FileAccess 直接读字节
+	var jpg_img := _load_jpg(jpg_path)
+	if jpg_img:
+		var tex := ImageTexture.create_from_image(jpg_img)
 		_cache[tex_name] = tex
 		return tex
 
-	# 4. 绝对路径
-	var abs_path := "D:/AI/GodotProjects/combat-demo/assets/generated/" + mapped + ".jpg"
-	var img3 := _load_jpg(abs_path)
-	if img3:
-		var tex := ImageTexture.create_from_image(img3)
+	# 5. 绝对路径 fallback
+	var abs_path := "D:/AI/GodotProjects/combat-demo/assets/generated/" + mapped + ".png"
+	var abs_img := _load_png(abs_path)
+	if abs_img:
+		var tex := ImageTexture.create_from_image(abs_img)
+		_cache[tex_name] = tex
+		return tex
+
+	var abs_jpg := "D:/AI/GodotProjects/combat-demo/assets/generated/" + mapped + ".jpg"
+	var abs_jpg_img := _load_jpg(abs_jpg)
+	if abs_jpg_img:
+		var tex := ImageTexture.create_from_image(abs_jpg_img)
 		_cache[tex_name] = tex
 		return tex
 

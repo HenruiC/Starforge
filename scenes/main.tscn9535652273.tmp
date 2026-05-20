@@ -1,0 +1,372 @@
+[gd_scene format=3 uid="uid://main001"]
+
+[ext_resource type="Script" uid="uid://c4hemx7jragl7" path="res://scripts/game_manager.gd" id="1_gm"]
+[ext_resource type="Script" uid="uid://bu0h3wb3xnyv5" path="res://scripts/camera_controller.gd" id="2_cam"]
+[ext_resource type="PackedScene" uid="uid://player001" path="res://scenes/player.tscn" id="3_player"]
+[ext_resource type="PackedScene" path="res://scenes/dialogue_panel.tscn" id="5_dlg"]
+[ext_resource type="Script" uid="uid://dcsuye3vugdpw" path="res://scripts/map_system.gd" id="6_map_sys"]
+[ext_resource type="Texture2D" uid="uid://dler16bj3uiwf" path="res://assets/generated/map_full.jpg" id="6_tipki"]
+[ext_resource type="Script" uid="uid://btbnb5lffr381" path="res://scripts/nav_manager.gd" id="7_nav"]
+[ext_resource type="Script" uid="uid://d77uuptqd0gv" path="res://scripts/school_map.gd" id="8_sm"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_kill"]
+font_size = 22
+
+[sub_resource type="LabelSettings" id="LabelSettings_wave"]
+font_color = Color(0.8, 0.7, 0.3, 1)
+
+[node name="Main" type="Node2D" unique_id=609559573]
+
+[node name="GameManager" type="Node2D" parent="." unique_id=1220987047]
+script = ExtResource("1_gm")
+
+[node name="Player" parent="GameManager" unique_id=508149488 instance=ExtResource("3_player")]
+position = Vector2(1600, 2200)
+
+[node name="Enemies" type="Node2D" parent="GameManager" unique_id=319492698]
+
+[node name="Projectiles" type="Node2D" parent="GameManager" unique_id=622400431]
+
+[node name="SpawnTimer" type="Timer" parent="GameManager" unique_id=1525321568]
+wait_time = 1.5
+
+[node name="WaveTimer" type="Timer" parent="GameManager" unique_id=1854290189]
+wait_time = 30.0
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1334731866]
+position = Vector2(640, 360)
+zoom = Vector2(0.7, 0.7)
+script = ExtResource("2_cam")
+
+[node name="NavManager" type="Node2D" parent="." unique_id=1822902892]
+script = ExtResource("7_nav")
+
+[node name="SchoolMap" type="Node2D" parent="." unique_id=1487415849]
+script = ExtResource("8_sm")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1688606201]
+z_index = -1
+offset_left = -200.0
+offset_top = -100.0
+offset_right = 3300.0
+offset_bottom = 2500.0
+color = Color(0.06, 0.06, 0.12, 1)
+
+[node name="HUDLayer" type="CanvasLayer" parent="." unique_id=491626214]
+
+[node name="HUD" type="Control" parent="HUDLayer" unique_id=1265628056]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="KillCount" type="Label" parent="HUDLayer/HUD" unique_id=639797196]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 16.0
+offset_right = 320.0
+offset_bottom = 44.0
+text = "击杀: 0"
+label_settings = SubResource("LabelSettings_kill")
+
+[node name="WaveLabel" type="Label" parent="HUDLayer/HUD" unique_id=2529622]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 44.0
+offset_right = 200.0
+offset_bottom = 64.0
+text = "波次 1"
+label_settings = SubResource("LabelSettings_wave")
+
+[node name="MissionTitle" type="Label" parent="HUDLayer/HUD" unique_id=785276831]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 100.0
+offset_right = 400.0
+offset_bottom = 124.0
+theme_override_colors/font_color = Color(0.9, 0.7, 0.2, 1)
+theme_override_font_sizes/font_size = 16
+
+[node name="MissionObjectives" type="Label" parent="HUDLayer/HUD" unique_id=412401944]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 128.0
+offset_right = 400.0
+offset_bottom = 220.0
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_font_sizes/font_size = 13
+
+[node name="TimerLabel" type="Label" parent="HUDLayer/HUD" unique_id=1596089711]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 68.0
+offset_right = 200.0
+offset_bottom = 86.0
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+text = "剩余: 30s"
+
+[node name="GameOver" type="Control" parent="HUDLayer/HUD" unique_id=46320749]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -100.0
+offset_right = 200.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="ColorRect" parent="HUDLayer/HUD/GameOver" unique_id=2072908265]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.05, 0.05, 0.1, 0.92)
+
+[node name="Title" type="Label" parent="HUDLayer/HUD/GameOver" unique_id=734187145]
+layout_mode = 0
+offset_left = -180.0
+offset_top = -80.0
+offset_right = 180.0
+offset_bottom = -40.0
+theme_override_colors/font_color = Color(1, 0.3, 0.2, 1)
+theme_override_font_sizes/font_size = 36
+text = "你阵亡了"
+horizontal_alignment = 1
+
+[node name="FinalScore" type="Label" parent="HUDLayer/HUD/GameOver" unique_id=201294834]
+layout_mode = 0
+offset_left = -180.0
+offset_top = -30.0
+offset_right = 180.0
+offset_bottom = 30.0
+theme_override_font_sizes/font_size = 22
+text = "击杀数: 0"
+horizontal_alignment = 1
+
+[node name="RestartHint" type="Label" parent="HUDLayer/HUD/GameOver" unique_id=783789869]
+layout_mode = 0
+offset_left = -180.0
+offset_top = 50.0
+offset_right = 180.0
+offset_bottom = 80.0
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+text = "按 W 重新开始"
+horizontal_alignment = 1
+
+[node name="CharSelect" type="Control" parent="HUDLayer" unique_id=1334045671]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Bg" type="ColorRect" parent="HUDLayer/CharSelect" unique_id=639788009]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.02, 0.02, 0.06, 0.92)
+
+[node name="Title" type="Label" parent="HUDLayer/CharSelect" unique_id=209505817]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_top = 60.0
+offset_right = 300.0
+offset_bottom = 110.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.9, 0.7, 0.2, 1)
+theme_override_font_sizes/font_size = 32
+text = "选择你的战斗风格"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="HUDLayer/CharSelect" unique_id=2119853814]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_top = 115.0
+offset_right = 300.0
+offset_bottom = 145.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.5, 0.5, 0.5, 1)
+text = "—— 天赋猎人 · 战斗原型 ——"
+horizontal_alignment = 1
+
+[node name="Buttons" type="HBoxContainer" parent="HUDLayer/CharSelect" unique_id=1488449522]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -480.0
+offset_top = 180.0
+offset_right = 480.0
+offset_bottom = 500.0
+grow_horizontal = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="LevelUpPanel" type="Control" parent="HUDLayer" unique_id=2055033521]
+visible = false
+z_index = 8
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Bg" type="ColorRect" parent="HUDLayer/LevelUpPanel" unique_id=585709265]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.5)
+
+[node name="Title" type="Label" parent="HUDLayer/LevelUpPanel" unique_id=482706082]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 80.0
+offset_right = 200.0
+offset_bottom = 120.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.9, 0.7, 0.2, 1)
+theme_override_font_sizes/font_size = 28
+text = "⬆ 升级！选择一个强化方向 ⬆"
+horizontal_alignment = 1
+
+[node name="Buttons" type="HBoxContainer" parent="HUDLayer/LevelUpPanel" unique_id=1404978797]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -310.0
+offset_top = 220.0
+offset_right = 310.0
+offset_bottom = 320.0
+grow_horizontal = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="MapPanel" type="Control" parent="HUDLayer" unique_id=1937492909]
+visible = false
+z_index = 5
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Bg" type="ColorRect" parent="HUDLayer/MapPanel" unique_id=896820854]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.85)
+
+[node name="Title" type="Label" parent="HUDLayer/MapPanel" unique_id=241899659]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_right = 200.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.9, 0.7, 0.2, 1)
+theme_override_font_sizes/font_size = 24
+text = "—— 学校副本地图 ——"
+horizontal_alignment = 1
+
+[node name="MapTexture" type="TextureRect" parent="HUDLayer/MapPanel" unique_id=764606729]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -400.0
+offset_right = 400.0
+grow_horizontal = 2
+texture = ExtResource("6_tipki")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="FogOverlay" type="TextureRect" parent="HUDLayer/MapPanel" unique_id=1999311793]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -400.0
+offset_right = 400.0
+grow_horizontal = 2
+
+[node name="PlayerMarker" type="Label" parent="HUDLayer/MapPanel" unique_id=640995742]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -10.0
+offset_right = 10.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 0.3, 0.2, 1)
+theme_override_font_sizes/font_size = 24
+text = "●"
+horizontal_alignment = 1
+
+[node name="ZoneLabel" type="Label" parent="HUDLayer/MapPanel" unique_id=790178264]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -350.0
+offset_right = 350.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.9, 0.7, 0.2, 1)
+theme_override_font_sizes/font_size = 14
+text = "当前位置: ---"
+horizontal_alignment = 1
+
+[node name="Hint" type="Label" parent="HUDLayer/MapPanel" unique_id=251481000]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_right = 200.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.5, 0.5, 0.5, 1)
+text = "[ M 打开 | ESC 关闭 ]  已探索: 0%"
+horizontal_alignment = 1
+
+[node name="MapSystem" type="Node" parent="HUDLayer" unique_id=1459734765]
+script = ExtResource("6_map_sys")
+
+[node name="DialoguePanel" parent="HUDLayer" unique_id=1403792781 instance=ExtResource("5_dlg")]
+z_index = 10
+layout_mode = 3
+grow_horizontal = 2
+grow_vertical = 2
+
+[connection signal="timeout" from="GameManager/SpawnTimer" to="GameManager" method="_on_spawn_timer_timeout"]
+[connection signal="timeout" from="GameManager/WaveTimer" to="GameManager" method="_on_wave_timer_timeout"]

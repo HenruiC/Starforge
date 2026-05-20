@@ -20,6 +20,7 @@ config/features=PackedStringArray("4.6")
 EventBus="*res://scripts/event_bus.gd"
 CombatFeedback="*res://scripts/combat_feedback.gd"
 GameState="*res://scripts/game_state.gd"
+Coordinator="*uid://c0a4t4cc00rd1n"
 
 [display]
 
@@ -31,6 +32,10 @@ window/stretch/aspect="expand"
 [dotnet]
 
 project/assembly_name="Combat Demo"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/combat_tools/plugin.cfg")
 
 [input]
 

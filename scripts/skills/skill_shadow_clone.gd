@@ -22,7 +22,10 @@ func execute() -> void:
 	area.add_child(shape)
 	area.collision_layer = 16; area.collision_mask = 0
 	clone.add_child(area)
-	effect_parent.add_child(clone)
+	if clone.get_parent():
+		clone.reparent(effect_parent)
+	else:
+		effect_parent.add_child(clone)
 
 	# 定时爆炸
 	var t := create_tween()
@@ -43,10 +46,10 @@ func _explode(pos: Vector2) -> void:
 	# VFX
 	var ring := _create_effect_rect(Color(0.6, 0.2, 0.8, 0.5), Vector2(explode_radius*2, explode_radius*2), pos, 15)
 	ring.scale = Vector2(0.3, 0.3)
-	var t := create_tween().set_parallel(true)
-	t.tween_property(ring, "scale", Vector2(1.0, 1.0), 0.2)
-	t.tween_property(ring, "modulate:a", 0.0, 0.25)
-	t.chain().tween_callback(ring.queue_free)
+	var t2 := create_tween().set_parallel(true)
+	t2.tween_property(ring, "scale", Vector2(1.0, 1.0), 0.2)
+	t2.tween_property(ring, "modulate:a", 0.0, 0.25)
+	t2.chain().tween_callback(ring.queue_free)
 
 func apply_level_up(power: int = 1) -> void:
 	explode_damage += power * 6
